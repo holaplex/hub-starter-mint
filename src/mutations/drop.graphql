@@ -1,0 +1,8 @@
+mutation MintNft($input: MintDropInput!) {
+  mintEdition(input: $input) {
+    collectionMint {
+      address
+      owner
+    }
+  }
+}

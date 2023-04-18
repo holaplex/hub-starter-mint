@@ -1,0 +1,15 @@
+mutation CreateCustomer($input: CreateCustomerInput!) {
+  createCustomer(input: $input) {
+    customer {
+      id
+    }
+  }
+}
+
+mutation CreateCustomerWallet($input: CreateCustomerWalletInput!) {
+  createCustomerWallet(input: $input) {
+    wallet {
+      address
+    }
+  }
+}

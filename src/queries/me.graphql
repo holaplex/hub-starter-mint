@@ -1,0 +1,47 @@
+query GetMe {
+  me {
+    email
+    image
+    wallet {
+      address
+    }
+  }
+}
+
+
+query GetCreditsInfo($organization: UUID!) {
+  creditSheet {
+    mintEdition {
+      __typename
+      blockchains {
+        name
+        credits
+      }
+    }
+    createDrop {
+      __typename
+      blockchains {
+        name
+        credits
+      }
+    }
+  }
+	organization(id: $organization) {
+    credits {
+      balance
+      history {
+        credits
+        initiatedBy {
+          firstName
+          lastName
+          email
+        }
+        createdAt
+        # mintEdition
+        action
+        # SOLANA
+        blockchain
+      }
+    }
+	}
+}

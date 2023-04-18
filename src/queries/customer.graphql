@@ -1,0 +1,17 @@
+query GetCustomerWallet(
+  $project: UUID!
+  $customer: UUID!
+  $assetType: AssetType!
+) {
+  project(id: $project) {
+    customer(id: $customer) {
+      id
+      treasury {
+        id
+        wallet(assetType: $assetType) {
+          address
+        }
+      }
+    }
+  }
+}

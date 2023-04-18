@@ -1,0 +1,47 @@
+query GetDrops {
+  drops {
+    id
+    startTime
+    endTime
+    collection {
+      id
+      totalMints
+      supply
+      address
+      holders {
+        address
+        owns
+      }
+      metadataJson {
+        id
+        image
+        name
+        description
+      }
+    }
+  }
+}
+
+query GetDrop($drop: ID!) {
+  drop(id: $drop) {
+    id
+    startTime
+    endTime
+    collection {
+      id
+      totalMints
+      supply
+      address
+      holders {
+        address
+        owns
+      }
+      metadataJson {
+        id
+        image
+        name
+        description
+      }
+    }
+  }
+}
