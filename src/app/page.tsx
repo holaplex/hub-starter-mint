@@ -1,6 +1,11 @@
+'use client';
 import Image from 'next/image';
+import useMe from '../hooks/useMe';
+import { shorten } from '../modules/wallet';
 
 export default function Home() {
+  const me = useMe();
+
   return (
     <div className='flex flex-col px-6 mt-14 md:mt-24'>
       <div className='flex flex-col-reverse md:flex-row gap-6 md:gap-20'>
@@ -29,7 +34,17 @@ export default function Home() {
         </div>
       </div>
       <div className='bg-gray-800 rounded-lg p-6 flex md:hidden justify-between mt-8 w-full items-center mb-6'>
-        <span className='text-gray-300'>Sign up to clain free NFT</span>
+        {me?.wallet ? (
+          <div className='flex gap-2 items-center'>
+            <img className='w-10 h-10 rounded-full' src={me.image as string} />
+            <div className='flex flex-col gap-1'>
+              <span className='text-gray-300 text-xs'>Wallet connected</span>
+              <span>{shorten(me?.wallet?.address as string)}</span>
+            </div>
+          </div>
+        ) : (
+          <span className='text-gray-300'>Sign up to clain free NFT</span>
+        )}
         <button className='rounded-full bg-yellow-300 py-3 px-8 text-gray-900'>
           Claim NFT
         </button>

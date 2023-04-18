@@ -1,32 +1,32 @@
-"use client";
-import { XMarkIcon } from "@heroicons/react/24/solid";
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+'use client';
+import { XMarkIcon } from '@heroicons/react/24/solid';
+import { signIn } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 const fqdn = process.env.NEXT_PUBLIC_FQDN as string;
 
 export default function Login() {
   const searchParams = useSearchParams();
-  const callbackUrl = `${fqdn}${searchParams.get("return_to")}`;
+  const callbackUrl = `${fqdn}${searchParams.get('return_to')}`;
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen w-full gap-4">
-      <Link href={callbackUrl} className="fixed top-8 right-8">
+    <div className='flex flex-col justify-center items-center min-h-screen w-full gap-4'>
+      <Link href={callbackUrl} className='fixed top-8 right-8'>
         <XMarkIcon
-          className="w-14 h-14 cursor-pointer hover:opacity-80"
-          color="#BDBDBD"
+          className='w-14 h-14 cursor-pointer hover:opacity-80'
+          color='#BDBDBD'
         />
       </Link>
-      <h1 className="text-2xl bold mb-8">Sign in to create your free wallet</h1>
+      <h1 className='text-2xl bold mb-8'>Sign in to create your free wallet</h1>
       <button
-        className="rounded-full px-10 py-3 bg-[#4c8bf5] text-white hover:opacity-80 transition"
+        className='rounded-lg px-20 py-3 bg-white text-black hover:opacity-80 transition'
         onClick={() =>
-          signIn("google", {
-            callbackUrl,
+          signIn('google', {
+            callbackUrl
           })
         }
       >
-        Login with Google
+        Continue with Google
       </button>
     </div>
   );

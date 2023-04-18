@@ -8,7 +8,6 @@ import UserSource from '@/modules/user';
 import holaplex from '@/modules/holaplex';
 
 import db from '@/modules/db';
-import Image from 'next/image';
 import Header from '../layouts/Header';
 import { Wallet } from '../graphql.types';
 
