@@ -105,8 +105,8 @@ export default function Home({ session, drop }: HomeProps) {
                     </>
                   ) : (
                     <>
-                      <div className="h-4 w-24 rounded-md bg-gray-800 animate-pulse" />
-                      <div className="h-6 w-16 rounded-md bg-gray-800 animate-pulse" />
+                      <div className="h-4 w-24 rounded-md bg-contrast animate-pulse" />
+                      <div className="h-6 w-16 rounded-md bg-contrast animate-pulse" />
                     </>
                   )}
                 </div>
