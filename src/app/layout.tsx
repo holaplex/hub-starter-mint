@@ -18,7 +18,6 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-
   const session = await getServerSession(authOptions);
 
   const me = await userSource.get(session?.user?.email);
@@ -29,7 +28,7 @@ export default async function Layout({
       <body
         className={clsx(
           inter.className,
-          "bg-black text-white container m-auto flex flex-col flex-grow min-h-screen items-center px-4 lg:px-0"
+          "bg-backdrop text-white container m-auto flex flex-col flex-grow min-h-screen max-w-5xl items-center px-4 lg:px-0"
         )}
       >
         <App me={me}>{children}</App>

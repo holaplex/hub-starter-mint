@@ -122,6 +122,9 @@ export type Collection = {
   mints?: Maybe<Array<CollectionMint>>;
   /** A list of all NFT purchases from the collection, including both primary and secondary sales. */
   purchases?: Maybe<Array<Purchase>>;
+  /** The royalties assigned to mints belonging to the collection expressed in basis points. */
+  sellerFeeBasisPoints: Scalars['Int'];
+  /** The transaction signature of the collection. */
   signature?: Maybe<Scalars['String']>;
   /** The total supply of the collection. Setting to `null` implies unlimited minting. */
   supply?: Maybe<Scalars['Int']>;
@@ -151,22 +154,33 @@ export type CollectionCreatorInput = {
   verified?: InputMaybe<Scalars['Boolean']>;
 };
 
+/** Represents a single NFT minted from a collection. */
 export type CollectionMint = {
   __typename?: 'CollectionMint';
+  /** The wallet address of the NFT. */
   address: Scalars['String'];
+  /** The collection the NFT was minted from. */
   collection?: Maybe<Collection>;
+  /** The ID of the collection the NFT was minted from. */
   collectionId: Scalars['UUID'];
+  /** The date and time when the NFT was created. */
   createdAt: Scalars['NaiveDateTime'];
+  /** The unique ID of the creator of the NFT. */
   createdBy: Scalars['UUID'];
+  /** The status of the NFT creation. */
   creationStatus: CreationStatus;
+  /** The unique ID of the minted NFT. */
   id: Scalars['UUID'];
   /**
    * The metadata json associated to the collection.
-   * ## References
    * [Metaplex v1.1.0 Standard](https://docs.metaplex.com/programs/token-metadata/token-standard)
    */
   metadataJson?: Maybe<MetadataJson>;
+  /** The wallet address of the owner of the NFT. */
   owner: Scalars['String'];
+  /** The seller fee basis points (ie royalties) for the NFT. */
+  sellerFeeBasisPoints: Scalars['Int'];
+  /** The transaction signature associated with the NFT. */
   signature?: Maybe<Scalars['String']>;
 };
 
@@ -580,7 +594,6 @@ export type MetadataJson = {
   /** An optional animated version of the NFT art. */
   animationUrl?: Maybe<Scalars['String']>;
   attributes?: Maybe<Array<MetadataJsonAttribute>>;
-  collectionId: Scalars['UUID'];
   /** The description of the NFT. */
   description: Scalars['String'];
   /** An optional URL where viewers can find more information on the NFT, such as the collection's homepage or Twitter page. */
@@ -600,7 +613,6 @@ export type MetadataJson = {
 /** An attribute of the NFT. */
 export type MetadataJsonAttribute = {
   __typename?: 'MetadataJsonAttribute';
-  collectionId: Scalars['UUID'];
   id: Scalars['UUID'];
   metadataJsonId: Scalars['UUID'];
   /** The name of the attribute. */
@@ -843,11 +855,6 @@ export type MutationEditWebhookArgs = {
 
 export type MutationInviteMemberArgs = {
   input: InviteMemberInput;
-};
-
-
-export type MutationMintArgs = {
-  drop: Scalars['ID'];
 };
 
 
@@ -1106,7 +1113,6 @@ export type Purchase = {
 export type Query = {
   __typename?: 'Query';
   drop?: Maybe<Drop>;
-  drops?: Maybe<Array<Drop>>;
   /**
    * Returns a list of event types that an external service can subscribe to.
    *
@@ -1128,11 +1134,6 @@ export type Query = {
   project?: Maybe<Project>;
   /** Retrieve a user identity by providing their ID. */
   user?: Maybe<User>;
-};
-
-
-export type QueryDropArgs = {
-  id: Scalars['ID'];
 };
 
 
@@ -1396,7 +1397,6 @@ export type ResolversTypes = {
   EventType: ResolverTypeWrapper<EventType>;
   FilterType: FilterType;
   Holder: ResolverTypeWrapper<Holder>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Invite: ResolverTypeWrapper<Invite>;
   InviteMemberInput: InviteMemberInput;
@@ -1480,7 +1480,6 @@ export type ResolversParentTypes = {
   EditWebhookPayload: EditWebhookPayload;
   EventType: EventType;
   Holder: Holder;
-  ID: Scalars['ID'];
   Int: Scalars['Int'];
   Invite: Invite;
   InviteMemberInput: InviteMemberInput;
@@ -1552,6 +1551,7 @@ export type CollectionResolvers<ContextType = any, ParentType extends ResolversP
   metadataJson?: Resolver<Maybe<ResolversTypes['MetadataJson']>, ParentType, ContextType>;
   mints?: Resolver<Maybe<Array<ResolversTypes['CollectionMint']>>, ParentType, ContextType>;
   purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
+  sellerFeeBasisPoints?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   signature?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   supply?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   totalMints?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1576,6 +1576,7 @@ export type CollectionMintResolvers<ContextType = any, ParentType extends Resolv
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   metadataJson?: Resolver<Maybe<ResolversTypes['MetadataJson']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sellerFeeBasisPoints?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   signature?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1742,7 +1743,6 @@ export type MemberResolvers<ContextType = any, ParentType extends ResolversParen
 export type MetadataJsonResolvers<ContextType = any, ParentType extends ResolversParentTypes['MetadataJson'] = ResolversParentTypes['MetadataJson']> = {
   animationUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   attributes?: Resolver<Maybe<Array<ResolversTypes['MetadataJsonAttribute']>>, ParentType, ContextType>;
-  collectionId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   externalUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -1755,7 +1755,6 @@ export type MetadataJsonResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type MetadataJsonAttributeResolvers<ContextType = any, ParentType extends ResolversParentTypes['MetadataJsonAttribute'] = ResolversParentTypes['MetadataJsonAttribute']> = {
-  collectionId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   metadataJsonId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   traitType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1785,7 +1784,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   editProject?: Resolver<ResolversTypes['EditProjectPayload'], ParentType, ContextType, RequireFields<MutationEditProjectArgs, 'input'>>;
   editWebhook?: Resolver<ResolversTypes['EditWebhookPayload'], ParentType, ContextType, RequireFields<MutationEditWebhookArgs, 'input'>>;
   inviteMember?: Resolver<ResolversTypes['Invite'], ParentType, ContextType, RequireFields<MutationInviteMemberArgs, 'input'>>;
-  mint?: Resolver<Maybe<ResolversTypes['CollectionMint']>, ParentType, ContextType, RequireFields<MutationMintArgs, 'drop'>>;
+  mint?: Resolver<Maybe<ResolversTypes['CollectionMint']>, ParentType, ContextType>;
   mintEdition?: Resolver<ResolversTypes['MintEditionPayload'], ParentType, ContextType, RequireFields<MutationMintEditionArgs, 'input'>>;
   patchDrop?: Resolver<ResolversTypes['PatchDropPayload'], ParentType, ContextType, RequireFields<MutationPatchDropArgs, 'input'>>;
   pauseDrop?: Resolver<ResolversTypes['PauseDropPayload'], ParentType, ContextType, RequireFields<MutationPauseDropArgs, 'input'>>;
@@ -1864,8 +1863,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  drop?: Resolver<Maybe<ResolversTypes['Drop']>, ParentType, ContextType, RequireFields<QueryDropArgs, 'id'>>;
-  drops?: Resolver<Maybe<Array<ResolversTypes['Drop']>>, ParentType, ContextType>;
+  drop?: Resolver<Maybe<ResolversTypes['Drop']>, ParentType, ContextType>;
   eventTypes?: Resolver<Array<ResolversTypes['EventType']>, ParentType, ContextType>;
   invite?: Resolver<Maybe<ResolversTypes['Invite']>, ParentType, ContextType, RequireFields<QueryInviteArgs, 'id'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;

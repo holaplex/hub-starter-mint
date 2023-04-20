@@ -29,30 +29,3 @@ query GetProjectDrop($project: UUID!, $drop: UUID!) {
   }
 }
 
-query GetProjectDrops($project: UUID!) {
-  project(id: $project) {
-    id
-    drops {
-      id
-      startTime
-      endTime
-      collection {
-        id
-        totalMints
-        supply
-        address
-        holders {
-          address
-          owns
-        }
-        metadataJson {
-          id
-          image
-          name
-          description
-        }
-      }
-    }
-  }
-}
- 

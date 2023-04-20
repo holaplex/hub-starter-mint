@@ -4,6 +4,7 @@ query GetCustomerWallet(
   $assetType: AssetType!
 ) {
   project(id: $project) {
+    id
     customer(id: $customer) {
       id
       treasury {
