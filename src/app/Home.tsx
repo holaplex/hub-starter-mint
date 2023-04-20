@@ -39,9 +39,7 @@ export default function Home({ session, drop }: HomeProps) {
   return (
     <>
       <div className="flex w-full justify-between items-center py-4">
-        <div className="relative w-[103px] md:w-[199px] h-[9px] md:h-[18px]">
-          <Image src="/img/logo.png" alt="site logo" fill />
-        </div>
+        <Image src="/img/logo.png" alt="site logo" width={50} height={67} />
         {!me ? (
           <>
             <div className="flex gap-1 md:gap-4 items-center">
