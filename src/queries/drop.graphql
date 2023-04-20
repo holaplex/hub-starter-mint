@@ -8,6 +8,10 @@ query GetDrop {
       totalMints
       supply
       address
+      holders {
+        address
+        owns
+      }
       metadataJson {
         id
         image

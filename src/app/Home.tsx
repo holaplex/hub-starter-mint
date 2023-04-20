@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
-import { Drop as DropType, Maybe } from "@/graphql.types";
+import { Drop as DropType, Maybe, Collection } from "@/graphql.types";
 import { shorten } from "../modules/wallet";
 import { MintDrop } from "@/mutations/mint.graphql";
-import { useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { GetDrop } from "@/queries/drop.graphql";
 import BounceLoader from "react-spinners/BounceLoader";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { isNil, not, pipe } from "ramda";
 import useMe from "@/hooks/useMe";
 import { useRouter, usePathname } from "next/navigation";
 import { Session } from "next-auth";
+import { CheckIcon } from "@heroicons/react/24/solid";
 
 interface MintData {
   mint: string;
@@ -22,15 +23,31 @@ interface HomeProps {
   drop: Maybe<DropType> | undefined;
 }
 
+interface GetDropsData {
+  drop: DropType;
+}
+
+interface GetDropVars {
+  drop: string;
+}
+
 export default function Home({ session, drop }: HomeProps) {
   const me = useMe();
   const collection = drop?.collection;
   const metadataJson = collection?.metadataJson;
+  const client = useApolloClient();
   const holder = collection?.holders?.find(
     (holder) => holder.address === me?.wallet?.address
   );
   const owns = pipe(isNil, not)(holder);
-  const [mint, { loading }] = useMutation<MintData>(MintDrop);
+  const [mint, { loading }] = useMutation<MintData>(MintDrop, {
+    awaitRefetchQueries: true,
+    refetchQueries: [
+      {
+        query: GetDrop,
+      },
+    ],
+  });
 
   const onMint = () => {
     mint();
@@ -122,15 +139,18 @@ export default function Home({ session, drop }: HomeProps) {
                 </Link>
               </div>
             )}
-            {me?.wallet && (
-              <button
-                className="font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80"
-                onClick={onMint}
-                disabled={loading}
-              >
-                Claim NFT
-              </button>
-            )}
+            {me?.wallet &&
+              (owns ? (
+                <CheckIcon width={40} />
+              ) : (
+                <button
+                  className="font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80"
+                  onClick={onMint}
+                  disabled={loading}
+                >
+                  Claim NFT
+                </button>
+              ))}
           </div>
         </div>
       </div>

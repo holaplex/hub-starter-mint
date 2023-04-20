@@ -83,8 +83,6 @@ const mutationResolvers: MutationResolvers<AppContext> = {
       },
     });
 
-    console.log(session?.user?.email, wallet?.address);
-
     const { data } = await holaplex.mutate<MintNftData, MintNftVars>({
       mutation: MintNft,
       variables: {
