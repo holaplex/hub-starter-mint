@@ -32,12 +32,9 @@ export interface AppContext {
   };
 }
 
-interface GetDropsData {
-  project: Pick<Project, "drops">;
-}
-
-interface GetDropsVars {
+interface GetDropVars {
   project: string;
+  drop: string;
 }
 
 interface GetDropData {
@@ -50,27 +47,6 @@ interface GetDropVars {
 }
 
 export const queryResolvers: QueryResolvers<AppContext> = {
-  async drops(_a, _b, { dataSources: { holaplex } }) {
-    const { data } = await holaplex.query<GetDropsData, GetDropsVars>({
-      fetchPolicy: 'network-only',
-      query: GetProjectDrops,
-      variables: { project: process.env.HOLAPLEX_PROJECT_ID as string },
-    });
-
-    return data.project.drops as Drop[];
-  },
-  async drop(_a, { id }, { dataSources: { holaplex } }) {
-    const { data } = await holaplex.query<GetDropData, GetDropVars>({
-      fetchPolicy: 'network-only',
-      query: GetProjectDrop,
-      variables: {
-        project: process.env.HOLAPLEX_PROJECT_ID as string,
-        drop: id,
-      },
-    });
-
-    return data.project.drop as Drop;
-  },
   async me(_a, _b, { session, dataSources: { user } }) {
     if (!session) {
       return null;
@@ -95,7 +71,7 @@ interface MintNftVars {
 }
 
 const mutationResolvers: MutationResolvers<AppContext> = {
-  async mint(_, { drop }, { session, dataSources: { db, holaplex } }) {
+  async mint(_a, _b, { session, dataSources: { db, holaplex } }) {
     if (!session) {
       return null;
     }
@@ -108,9 +84,16 @@ const mutationResolvers: MutationResolvers<AppContext> = {
       },
     });
 
+    console.log(session?.user?.email, wallet?.address);
+
     const { data } = await holaplex.mutate<MintNftData, MintNftVars>({
       mutation: MintNft,
-      variables: { input: { drop, recipient: wallet?.address as string } },
+      variables: {
+        input: {
+          drop: process.env.HOLAPLEX_DROP_ID as string,
+          recipient: wallet?.address as string,
+        },
+      },
     });
 
     return data?.mintEdition.collectionMint as CollectionMint;

@@ -4,14 +4,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        yellow: {
-          300: '#F3F36D'
-        },
-        gray: {
-          300: '#BDBDBD',
-          800: '#212122',
-          900: '#1A1A1D'
-        }
+        cta: '#F3F36D',
+        backdrop: '#1A1A1D',
+        contrast: '#212122',
       }
     }
   },

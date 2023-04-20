@@ -1,0 +1,5 @@
+mutation MintDrop {
+  mint {
+    address
+  }
+}

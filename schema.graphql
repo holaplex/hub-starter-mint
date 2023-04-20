@@ -1037,28 +1037,10 @@ type User {
 }
 
 type Query {
-  drops: [Drop!]
-  drop(id: ID!): Drop
+  drop: Drop
   me: User
 }
 
 type Mutation {
-  mint(drop: ID!): CollectionMint
-}
-
-type User {
-  name: String
-  email: String
-  image: String
-  wallet: Wallet
-}
-
-type Query {
-  drops: [Drop!]
-  drop(id: ID!): Drop
-  me: User
-}
-
-type Mutation {
-  mint(drop: ID!): CollectionMint
+  mint: CollectionMint
 }

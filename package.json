@@ -1,5 +1,5 @@
 {
-  "name": "hub-starter",
+  "name": "hub-starter-mint",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,7 +17,6 @@
     "@apollo/client": "^3.7.10",
     "@apollo/server": "^4.4.1",
     "@as-integrations/next": "^1.2.0",
-    "@eluvio/elv-client-js": "^4.0.18",
     "@graphql-codegen/typescript-resolvers": "^3.1.1",
     "@heroicons/react": "^2.0.16",
     "@next-auth/prisma-adapter": "^1.0.5",

@@ -14,15 +14,6 @@ const nextConfig = {
   experimental: {
     appDir: true
   },
-  async redirects() {
-    return [
-      // {
-      //   source: "/",
-      //   destination: "/keys",
-      //   permanent: false
-      // },
-    ];
-  }
 };
 
 module.exports = withGraphql(nextConfig);
