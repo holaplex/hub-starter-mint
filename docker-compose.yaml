@@ -7,6 +7,6 @@ services:
     ports:
       - 5432:5432
     volumes: 
-      - hub-starter-mint:/var/lib/postgresql/data
+      - vikings-demo:/var/lib/postgresql/data
 volumes:
-  hub-starter-mint:
+  vikings-demo:

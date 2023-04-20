@@ -35,12 +35,12 @@ export default class UserSource {
       GetCustomerWalletData,
       GetCustomerWalletVars
     >({
-      fetchPolicy: 'network-only',
+      fetchPolicy: "network-only",
       query: GetCustomerWallet,
       variables: {
         project: process.env.HOLAPLEX_PROJECT_ID as string,
         customer: user?.holaplexCustomerId as string,
-        assetType: AssetType.SolTest,
+        assetType: AssetType.Sol,
       },
     });
 
