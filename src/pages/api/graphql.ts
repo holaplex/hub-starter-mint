@@ -18,6 +18,7 @@ import { Session } from "next-auth";
 import { MintNft } from "@/mutations/drop.graphql";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
+import { GetProjectDrop } from "@/queries/project.graphql";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import UserSource from "@/modules/user";
 import holaplex from "@/modules/holaplex";
@@ -46,6 +47,18 @@ interface GetDropVars {
 }
 
 export const queryResolvers: QueryResolvers<AppContext> = {
+  async drop(_a, _b, { dataSources: { holaplex } }) {
+    const { data } = await holaplex.query<GetDropData, GetDropVars>({
+      fetchPolicy: 'network-only',
+      query: GetProjectDrop,
+      variables: {
+        project: process.env.HOLAPLEX_PROJECT_ID as string,
+        drop: process.env.HOLAPLEX_DROP_ID as string,
+      },
+    });
+
+    return data.project.drop as Drop;
+  },
   async me(_a, _b, { session, dataSources: { user } }) {
     if (!session) {
       return null;

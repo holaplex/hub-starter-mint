@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
-import { Drop as DropType, Maybe, Collection } from "@/graphql.types";
+import { useState } from "react";
+import { Drop as DropType, Maybe, Collection, Holder } from "@/graphql.types";
 import { shorten } from "../modules/wallet";
 import { MintDrop } from "@/mutations/mint.graphql";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
@@ -33,11 +34,11 @@ interface GetDropVars {
 
 export default function Home({ session, drop }: HomeProps) {
   const me = useMe();
-  const collection = drop?.collection;
+  const dropQuery = useQuery(GetDrop);
+  const collection = dropQuery.data?.drop.collection;
   const metadataJson = collection?.metadataJson;
-  const client = useApolloClient();
   const holder = collection?.holders?.find(
-    (holder) => holder.address === me?.wallet?.address
+    (holder: Holder) => holder.address === me?.wallet?.address
   );
   const owns = pipe(isNil, not)(holder);
   const [mint, { loading }] = useMutation<MintData>(MintDrop, {
