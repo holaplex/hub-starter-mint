@@ -18,7 +18,6 @@ import { Session } from "next-auth";
 import { MintNft } from "@/mutations/drop.graphql";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
-import { GetProjectDrops, GetProjectDrop } from "@/queries/project.graphql";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import UserSource from "@/modules/user";
 import holaplex from "@/modules/holaplex";
