@@ -40,7 +40,7 @@ export default class UserSource {
       variables: {
         project: process.env.HOLAPLEX_PROJECT_ID as string,
         customer: user?.holaplexCustomerId as string,
-        assetType: AssetType.Sol,
+        assetType: process.env.HOLAPLEX_WALLET_ASSET_TYPE as AssetType,
       },
     });
 

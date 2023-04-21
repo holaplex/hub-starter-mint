@@ -70,7 +70,7 @@ export default async function handler(
         variables: {
           input: {
             customer: msg?.payload.customer_id,
-            assetType: AssetType.Sol,
+            assetType: process.env.HOLAPLEX_WALLET_ASSET_TYPE as AssetType,
           },
         },
       });

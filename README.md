@@ -38,7 +38,7 @@ docker compose up -d
 npm install
 
 # setup database
-npm run reset
+npm run db
 
 # setup prisma client
 npm run generate
@@ -54,8 +54,6 @@ See your app at [http://localhost:3000](http://localhost:3000)
 Create a `.env` file at the root of the project. Add the following environment variable.
 
 ```
-NEXT_PUBLIC_FQDN=http://localhost:3000
-
 # setup SSO with Google
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -66,10 +64,17 @@ POSTGRES_DB=hub-starter
 POSTGRES_PASSWORD=holaplex
 
 # holaplex
-HOLAPLEX_API_ENDPOINT=
+HOLAPLEX_API_ENDPOINT=https://api.holaplex.com/graphql
+# https://docs.holaplex.dev/api
 HOLAPLEX_AUTH_TOKEN=
+# https://docs.holaplex.dev/hub/For%20Developers/webhooks-overview
 HOLAPLEX_WEBHOOK_SECRET=
+# https://docs.holaplex.dev/hub/Guides/creating-a-project
 HOLAPLEX_PROJECT_ID=
+# https://docs.holaplex.dev/hub/Guides/creating-drops
+HOLAPLEX_DROP_ID=
+# https://docs.holaplex.dev/hub/Guides/creating-a-customer-wallet
+HOLAPLEX_WALLET_ASSET_TYPE=SOL
 ```
 
 ### Migrations
@@ -78,8 +83,4 @@ Follow the [Prisma guide](https://www.prisma.io/docs/guides/database/developing-
 
 ## Release
 
-```
-# build and run the app
-docker build . -t {org}/{app}:{tag}
-docker run {org}/{app}-app:{tag}
-```
+Coming Soon...

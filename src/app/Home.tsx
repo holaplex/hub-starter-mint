@@ -9,9 +9,8 @@ import { GetDrop } from "@/queries/drop.graphql";
 import BounceLoader from "react-spinners/BounceLoader";
 import Link from "next/link";
 import clsx from "clsx";
-import { isNil, not, pipe } from "ramda";
+import { drop, isNil, not, pipe } from "ramda";
 import useMe from "@/hooks/useMe";
-import { useRouter, usePathname } from "next/navigation";
 import { Session } from "next-auth";
 import { CheckIcon } from "@heroicons/react/24/solid";
 
@@ -21,18 +20,9 @@ interface MintData {
 
 interface HomeProps {
   session?: Session | null;
-  drop: Maybe<DropType> | undefined;
 }
 
-interface GetDropsData {
-  drop: DropType;
-}
-
-interface GetDropVars {
-  drop: string;
-}
-
-export default function Home({ session, drop }: HomeProps) {
+export default function Home({ session }: HomeProps) {
   const me = useMe();
   const dropQuery = useQuery(GetDrop);
   const collection = dropQuery.data?.drop.collection;
@@ -57,7 +47,8 @@ export default function Home({ session, drop }: HomeProps) {
   return (
     <>
       <div className="flex w-full justify-between items-center py-4">
-        <Image src="/img/logo.png" alt="site logo" width={50} height={67} />
+        <Image src="/img/logo.png" alt="site logo" width={199} height={18} />
+
         {!me ? (
           <>
             <div className="flex gap-1 md:gap-4 items-center">
@@ -85,73 +76,99 @@ export default function Home({ session, drop }: HomeProps) {
       </div>
       <div className="w-full grid grid-cols-12  md:gap-4 lg:gap-12 mt-4 md:mt-10 lg:mt-16">
         <div className="col-span-12 md:col-span-6">
-          <img
-            src={metadataJson?.image as string}
-            alt={metadataJson?.name as string}
-            className="w-full object-contain rounded-lg"
-          />
+          {dropQuery.loading ? (
+            <div className="w-full aspect-square rounded-lg bg-contrast animate-pulse" />
+          ) : (
+            <img
+              src={metadataJson?.image as string}
+              alt={metadataJson?.name as string}
+              className="w-full object-contain rounded-lg"
+            />
+          )}
         </div>
         <div className="col-span-12 md:col-span-6">
           <div className="flex flex-col items-center md:items-start md:justify-center">
             <span className="text-2xl font-extrabold md:text-xl lg:text-3xl md:font-semibold">
-              {metadataJson?.name}
+              {dropQuery.loading ? (
+                <div className="rounded-full bg-contrast w-60 h-6 animate-pulse" />
+              ) : (
+                metadataJson?.name
+              )}
             </span>
-            <span className="text-base font-medium text-gray-300 mt-6 md:mt-3 text-center md:text-left">
-              {metadataJson?.description}
-            </span>
-          </div>
-          <div className="bg-contrast rounded-lg p-6 flex justify-between mt-8 items-center mb-6">
-            {session ? (
-              <div className="flex flex-row gap-2 items-center">
-                <img
-                  className="w-14 h-14 rounded-full"
-                  src={session?.user?.image as string}
-                />
-                <div className="flex flex-col gap-1">
-                  {me?.wallet ? (
-                    <>
-                      <div className="flex gap-2 items-center">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-gray-300 text-xs">
-                            Wallet connected
-                          </span>
-                          <span>{shorten(me?.wallet?.address as string)}</span>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="h-4 w-24 rounded-md bg-contrast animate-pulse" />
-                      <div className="h-6 w-16 rounded-md bg-contrast animate-pulse" />
-                    </>
-                  )}
-                </div>
+
+            {dropQuery.loading ? (
+              <div className="flex flex-col gap-2 w-full mt-6 md:mt-3">
+                <div className="rounded-full bg-contrast w-full h-4 animate-pulse" />
+                <div className="rounded-full bg-contrast w-full h-4 animate-pulse" />
+                <div className="rounded-full bg-contrast w-28 h-4 animate-pulse" />
               </div>
             ) : (
-              <div className="flex flex-row justify-between items-center w-full">
+              <span className="text-base font-medium text-gray-300 mt-6 md:mt-3 text-center md:text-left">
+                {metadataJson?.description}
+              </span>
+            )}
+          </div>
+          <div className="bg-contrast rounded-lg p-6 flex justify-between mt-8 items-center mb-6">
+            {dropQuery.loading ? (
+              <>
+                <div className="flex flex-row gap-2 items-center">
+                  <div className="bg-backdrop w-14 aspect-square rounded-full animate-pulse" />
+                  <div className="flex flex-col gap-1 justify-between">
+                    <div className="h-4 w-24 rounded-full bg-backdrop animate-pulse" />
+                    <div className="h-6 w-16 rounded-full bg-backdrop animate-pulse" />
+                  </div>
+                </div>
+                <div className="font-bold rounded-full bg-cta text-contrast w-32 h-12 transition animate-pulse" />
+              </>
+            ) : session ? (
+              <>
+                <div className="flex flex-row items-center gap-2">
+                  <img
+                    className="w-14 h-14 rounded-full"
+                    src={session?.user?.image as string}
+                  />
+
+                  <div className="flex flex-col gap-1 justify-between">
+                    {me?.wallet ? (
+                      <>
+                        <span className="text-gray-300 text-xs">
+                          Wallet connected
+                        </span>
+                        <span>{shorten(me?.wallet?.address as string)}</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="h-4 w-24 rounded-md bg-contrast animate-pulse" />
+                        <div className="h-6 w-16 rounded-md bg-contrast animate-pulse" />
+                      </>
+                    )}
+                  </div>
+                </div>
+                {owns ? (
+                  <CheckIcon width={40} />
+                ) : (
+                  <button
+                    className="font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80"
+                    onClick={onMint}
+                    disabled={loading}
+                  >
+                    Claim now
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
                 <span className="text-xs md:text-base text-gray-300">
                   Sign up to claim your NFT
                 </span>
                 <Link
                   href="/login"
-                  className="rounded-full px-6 py-3 bg-cta hover:bg-opacity-80 transition text-contrast"
+                  className="font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80"
                 >
                   Claim now
                 </Link>
-              </div>
+              </>
             )}
-            {me?.wallet &&
-              (owns ? (
-                <CheckIcon width={40} />
-              ) : (
-                <button
-                  className="font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80"
-                  onClick={onMint}
-                  disabled={loading}
-                >
-                  Claim NFT
-                </button>
-              ))}
           </div>
         </div>
       </div>
