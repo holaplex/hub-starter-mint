@@ -18,13 +18,19 @@ Includes:
   /migrations # prisma auto-generated migration files
 /src
  /app # next js app directory
+  /login # social sign up or login
+  page.tsx # mint page
  /pages
    /api # next js api routes
+    graphql.ts # apps graphql server
+    /webhooks
+      holaplex.ts # incoming webhooks from Holaplex
  /modules # utility clients and functions
    db.ts # prisma db client
    holaplex.ts # configured holaplex client
- /queries # holaplex api queries
- /mutations # holaplex api mutations
+ /queries # holaplex and app api queries
+ /mutations # holaplex and app api mutations
+ tailwind.config.js # color theme
 ```
 ## Getting Started
 
@@ -82,5 +88,15 @@ HOLAPLEX_WALLET_ASSET_TYPE=SOL
 Follow the [Prisma guide](https://www.prisma.io/docs/guides/database/developing-with-prisma-migrate) on adjusting the database through migrations. Once the Prisma schema has been adjusted run `npm run migrate`.
 
 ## Release
+The starter is designed to be deployed to [render](https://render.com) using their Infrastructure as Code (IaC) configuration file [render.yaml](/render.yaml). The IaC manifest will set up a web server for the mint page and a database for storing users, sessions, and wallets.
 
-Coming Soon...
+### Database
+After deploying the environment, access the shell of the web server and run the following command to create and set up the database schema:
+
+```
+npm run db
+```
+
+### Environment Variables
+Although the IaC will create placeholder environment variables for the web service, you will need to update them to match your Holaplex account.
+
