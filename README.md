@@ -28,7 +28,15 @@ Includes:
 ```
 ## Getting Started
 
-Ensure you have nodejs and docker installed on your workstation.
+To run locally, spin up a local webhook using [ngrok](https://ngrok.com/):
+1. [Download](https://ngrok.com/download) and install ngrok
+2. Start ngrok to create a public URL for your localhost. Replace 3000 with your local server's port if it differs.
+```
+ngrok http 3000
+```
+3. Note the Forwarding URL (e.g. https://yoursubdomain.ngrok.ioor yoursubdomain.ngrok-free.app) for configuring the webhook (see https://docs.holaplex.dev/hub/Guides/hosting-locally)
+
+To spin up the app, ensure you have nodejs and docker installed on your workstation. Then:
 
 ```
 # start postgres in a docker container
