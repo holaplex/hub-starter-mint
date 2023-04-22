@@ -4,6 +4,7 @@ import { ApolloProvider } from "@apollo/client";
 import api from "@/modules/api";
 import MeProvider from "@/providers/MeProvider";
 import { User } from "@/graphql.types";
+
 export default function App({
   children,
   me,
@@ -13,7 +14,7 @@ export default function App({
 }) {
   return (
     <ApolloProvider client={api}>
-      <MeProvider hydrate={me}>{children}</MeProvider>
+      <MeProvider me={me}>{children}</MeProvider>
     </ApolloProvider>
   );
 }

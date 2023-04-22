@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
-import { Drop as DropType, Maybe, Collection, Holder } from "@/graphql.types";
+import { useMemo } from "react";
+import { Holder } from "@/graphql.types";
 import { shorten } from "../modules/wallet";
 import { MintDrop } from "@/mutations/mint.graphql";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
@@ -27,9 +27,11 @@ export default function Home({ session }: HomeProps) {
   const dropQuery = useQuery(GetDrop);
   const collection = dropQuery.data?.drop.collection;
   const metadataJson = collection?.metadataJson;
-  const holder = collection?.holders?.find(
-    (holder: Holder) => holder.address === me?.wallet?.address
-  );
+  const holder = useMemo(() => {
+    return collection?.holders?.find(
+      (holder: Holder) => holder.address === me?.wallet?.address
+    );
+  }, [collection?.holders, me?.wallet]);
   const owns = pipe(isNil, not)(holder);
   const [mint, { loading }] = useMutation<MintData>(MintDrop, {
     awaitRefetchQueries: true,
@@ -79,11 +81,21 @@ export default function Home({ session }: HomeProps) {
           {dropQuery.loading ? (
             <div className="w-full aspect-square rounded-lg bg-contrast animate-pulse" />
           ) : (
-            <img
-              src={metadataJson?.image as string}
-              alt={metadataJson?.name as string}
-              className="w-full object-contain rounded-lg"
-            />
+            <div className="relative w-full aspect-square rounded-log overflow-hidden flex justify-center items-center">
+              <BounceLoader
+                className={clsx(
+                  "z-10 transition",
+                  loading ? "opacity-100" : "opacity-0"
+                )}
+                color="#fff"
+                size={80}
+              />
+              <img
+                src={metadataJson?.image as string}
+                alt={metadataJson?.name as string}
+                className="absolute top-0 left-0 right-0 bottom-0 object-cover"
+              />
+            </div>
           )}
         </div>
         <div className="col-span-12 md:col-span-6">
@@ -129,19 +141,10 @@ export default function Home({ session }: HomeProps) {
                   />
 
                   <div className="flex flex-col gap-1 justify-between">
-                    {me?.wallet ? (
-                      <>
-                        <span className="text-gray-300 text-xs">
-                          Wallet connected
-                        </span>
-                        <span>{shorten(me?.wallet?.address as string)}</span>
-                      </>
-                    ) : (
-                      <>
-                        <div className="h-4 w-24 rounded-md bg-contrast animate-pulse" />
-                        <div className="h-6 w-16 rounded-md bg-contrast animate-pulse" />
-                      </>
-                    )}
+                    <span className="text-gray-300 text-xs">
+                      Wallet connected
+                    </span>
+                    <span>{shorten(me?.wallet?.address as string)}</span>
                   </div>
                 </div>
                 {owns ? (

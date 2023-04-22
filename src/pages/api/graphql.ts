@@ -11,8 +11,6 @@ import {
   Project,
   CollectionMint,
   Drop,
-  User,
-  AssetType,
 } from "@/graphql.types";
 import { Session } from "next-auth";
 import { MintNft } from "@/mutations/drop.graphql";
@@ -49,7 +47,7 @@ interface GetDropVars {
 export const queryResolvers: QueryResolvers<AppContext> = {
   async drop(_a, _b, { dataSources: { holaplex } }) {
     const { data } = await holaplex.query<GetDropData, GetDropVars>({
-      fetchPolicy: 'network-only',
+      fetchPolicy: "network-only",
       query: GetProjectDrop,
       variables: {
         project: process.env.HOLAPLEX_PROJECT_ID as string,

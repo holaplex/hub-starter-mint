@@ -74,8 +74,6 @@ HOLAPLEX_API_ENDPOINT=https://api.holaplex.com/graphql
 # https://docs.holaplex.dev/api
 HOLAPLEX_AUTH_TOKEN=
 # https://docs.holaplex.dev/hub/For%20Developers/webhooks-overview
-HOLAPLEX_WEBHOOK_SECRET=
-# https://docs.holaplex.dev/hub/Guides/creating-a-project
 HOLAPLEX_PROJECT_ID=
 # https://docs.holaplex.dev/hub/Guides/creating-drops
 HOLAPLEX_DROP_ID=

@@ -16,3 +16,15 @@ query GetCustomerWallet(
     }
   }
 }
+
+query GetCustomerTreasury($project: UUID!, $customer: UUID!) {
+  project(id: $project) {
+    id
+    customer(id: $customer) {
+      id
+      treasury {
+        id
+      }
+    }
+  }
+}
