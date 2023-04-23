@@ -50,7 +50,6 @@ export default function Home({ session }: HomeProps) {
     <>
       <div className="flex w-full justify-between items-center py-4">
         <Image src="/img/logo.png" alt="site logo" width={199} height={18} />
-
         {!me ? (
           <>
             <div className="flex gap-1 md:gap-4 items-center">
@@ -107,7 +106,6 @@ export default function Home({ session }: HomeProps) {
                 metadataJson?.name
               )}
             </span>
-
             {dropQuery.loading ? (
               <div className="flex flex-col gap-2 w-full mt-6 md:mt-3">
                 <div className="rounded-full bg-contrast w-full h-4 animate-pulse" />
