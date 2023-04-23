@@ -1,7 +1,7 @@
 import { ApolloServer } from "@apollo/server";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
-import { readFileSync } from "fs";
+import { join } from "node:path";
 import db from "@/modules/db";
 import {
   MintDropInput,
@@ -20,6 +20,8 @@ import { GetProjectDrop } from "@/queries/project.graphql";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import UserSource from "@/modules/user";
 import holaplex from "@/modules/holaplex";
+import { loadSchema } from "@graphql-tools/load";
+import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
 
 export interface AppContext {
   session: Session | null;
@@ -108,7 +110,9 @@ const mutationResolvers: MutationResolvers<AppContext> = {
   },
 };
 
-const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8" });
+const typeDefs = await loadSchema("./schema.graphql", {
+  loaders: [new GraphQLFileLoader()],
+});
 
 const server = new ApolloServer<AppContext>({
   resolvers: {

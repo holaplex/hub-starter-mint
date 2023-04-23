@@ -97,7 +97,6 @@ export enum Blockchain {
   Solana = 'SOLANA'
 }
 
-/** An NFT collection that has either a fixed supply or unlimited mints. NFT collections are deployed to a desired blockchain. */
 export type Collection = {
   __typename?: 'Collection';
   /** The blockchain address of the collection used to view it in blockchain explorers. */
