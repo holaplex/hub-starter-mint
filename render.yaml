@@ -5,7 +5,6 @@ services:
     numInstances: 1
     buildCommand: npm install; npm run build
     startCommand: npm run start
-    rootDir: web
     envVars:
       - key: GOOGLE_CLIENT_ID
         sync: false
