@@ -2,9 +2,7 @@ services:
   - type: web
     name: mint-page
     env: node
-    scaling:
-      minInstances: 1
-      maxInstances: 1
+    numInstances: 1
     buildCommand: npm install; npm run build
     startCommand: npm run start
     rootDir: web
@@ -31,12 +29,11 @@ services:
         value: https://api.holaplex.com/graphql
       - key: DATABASE_URL
         fromDatabase:
-          name: mint-page
+          name: mint
           property: connectionString
 
     autoDeploy: true
 
 databases:
-  - name: mint-page
-    databaseName: mint-page
+  - name: mint
     ipAllowList: []
