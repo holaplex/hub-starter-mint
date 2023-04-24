@@ -14,7 +14,7 @@ const holaplexSchema = {
 const config: CodegenConfig = {
   overwrite: true,
   documents: ["**/*.graphql"],
-  schema: [holaplexSchema, "./app.graphql"],
+  schema: [holaplexSchema, "./schema.graphql"],
   generates: {
     "./@types/graphql.d.ts": {
       plugins: ["typescript-graphql-files-modules"],
