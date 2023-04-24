@@ -17,8 +17,6 @@ services:
         sync: false
       - key: HOLAPLEX_DROP_ID
         sync: false
-      - key: HOLAPLEX_WEBHOOK_SECRET
-        sync: false
       - key: NEXTAUTH_URL
         sync: false
       - key: NEXTAUTH_SECRET
