@@ -10,7 +10,7 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
-      - key: HOLAPLEX_API_TOKEN
+      - key: HOLAPLEX_AUTH_TOKEN
         sync: false
       - key: HOLAPLEX_PROJECT_ID
         sync: false
