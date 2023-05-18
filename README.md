@@ -71,7 +71,7 @@ POSTGRES_PASSWORD=holaplex
 
 # holaplex
 HOLAPLEX_API_ENDPOINT=https://api.holaplex.com/graphql
-# https://docs.holaplex.dev/api
+# https://api.holaplex.dev/graphql
 HOLAPLEX_AUTH_TOKEN=
 # https://docs.holaplex.dev/hub/For%20Developers/webhooks-overview
 HOLAPLEX_PROJECT_ID=
