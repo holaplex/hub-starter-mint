@@ -17,7 +17,7 @@ export default function App({
     <ApolloProvider client={api}>
       <MeProvider me={me}>
         {children}
-        <ToastContainer theme='dark' position='bottom-center' />
+        <ToastContainer theme='dark' position='bottom-right' />
       </MeProvider>
     </ApolloProvider>
   );
