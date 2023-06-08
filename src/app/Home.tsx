@@ -4,15 +4,16 @@ import { useMemo } from 'react';
 import { Holder } from '@/graphql.types';
 import { shorten } from '../modules/wallet';
 import { MintDrop } from '@/mutations/mint.graphql';
-import { useApolloClient, useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { GetDrop } from '@/queries/drop.graphql';
 import BounceLoader from 'react-spinners/BounceLoader';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { drop, isNil, not, pipe } from 'ramda';
+import { isNil, not, pipe } from 'ramda';
 import useMe from '@/hooks/useMe';
 import { Session } from 'next-auth';
 import { CheckIcon } from '@heroicons/react/24/solid';
+import { toast } from 'react-toastify';
 
 interface MintData {
   mint: string;
@@ -43,7 +44,16 @@ export default function Home({ session }: HomeProps) {
   });
 
   const onMint = () => {
-    mint();
+    mint()
+      .then((data: any) => {
+        toast.success('Mint successful');
+      })
+      .catch((e: any) => {
+        console.log('Mint error', e);
+        toast.error(
+          'Unable to mint. Please try again or reach out to support.'
+        );
+      });
   };
 
   return (
