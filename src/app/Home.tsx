@@ -144,7 +144,7 @@ export default function Home({ session }: HomeProps) {
                     <span className='text-gray-300 text-xs'>
                       Wallet connected
                     </span>
-                    <span>{shorten(me?.wallet?.address as string)}</span>
+                    <span><a href={'https://solscan.io/account/' + me?.wallet?.address as string + '#tokenAccounts'}>{shorten(me?.wallet?.address as string)}</a></span>
                   </div>
                 </div>
                 {owns ? (
