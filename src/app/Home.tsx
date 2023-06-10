@@ -179,7 +179,7 @@ export default function Home({ session }: HomeProps) {
         <span className='text-sm pb-1 text-gray-300'>Powered by</span>
         <Link href='https://www.holaplex.com' target='_blank'>
           <Image
-            src='/img/logo.png'
+            src='/img/holaplex-logo.png'
             alt='Holaplex Logo'
             width={150}
             height={100}
