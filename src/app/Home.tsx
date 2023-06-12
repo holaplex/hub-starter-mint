@@ -49,7 +49,6 @@ export default function Home({ session }: HomeProps) {
         toast.success('Mint successful');
       })
       .catch((e: any) => {
-        console.log('Mint error', e);
         toast.error(
           'Unable to mint. Please try again or reach out to support.'
         );
