@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Holder } from '@/graphql.types';
 import { shorten } from '../modules/wallet';
 import { MintDrop } from '@/mutations/mint.graphql';
@@ -14,6 +14,10 @@ import useMe from '@/hooks/useMe';
 import { Session } from 'next-auth';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { toast } from 'react-toastify';
+import { PopoverBox } from '../components/Popover';
+import { Icon } from '../components/Icon';
+import { signOut } from 'next-auth/react';
+import Copy from '../components/Copy';
 
 interface MintData {
   mint: string;
@@ -25,6 +29,7 @@ interface HomeProps {
 
 export default function Home({ session }: HomeProps) {
   const me = useMe();
+  const [minted, setMinted] = useState<boolean>(false);
   const dropQuery = useQuery(GetDrop);
   const collection = dropQuery.data?.drop.collection;
   const metadataJson = collection?.metadataJson;
@@ -47,6 +52,7 @@ export default function Home({ session }: HomeProps) {
     mint()
       .then((data: any) => {
         toast.success('Mint successful');
+        setMinted(true);
       })
       .catch((e: any) => {
         toast.error(
@@ -78,10 +84,36 @@ export default function Home({ session }: HomeProps) {
             </div>
           </>
         ) : (
-          <button className='text-cta font-bold border-2 rounded-full border-cta py-3 px-6 flex gap-2'>
-            <img className='w-6 h-6 rounded-full' src={me?.image as string} />
-            <span>{me?.name}</span>
-          </button>
+          <PopoverBox
+            triggerButton={
+              <button className='text-cta font-bold border-2 rounded-full border-cta py-3 px-6 flex gap-2 items-center'>
+                <img
+                  className='w-6 h-6 rounded-full'
+                  src={me?.image as string}
+                />
+                <span>{me?.name}</span>
+                <Icon.ChevronDown className='stroke-cta' />
+              </button>
+            }
+          >
+            <div className='rounded-lg bg-contrast p-6 flex flex-col items-center mt-4'>
+              <span className='text-xs text-gray-300'>
+                Solana wallet address
+              </span>
+              <div className='flex gap-2 mt-1'>
+                <span className='text-xs'>
+                  {shorten(me.wallet?.address as string)}
+                </span>
+                <Copy copyString={me.wallet?.address as string} />
+              </div>
+              <button
+                onClick={() => signOut()}
+                className='text-cta font-medium md:font-bold md:border-2 md:rounded-full md:border-cta md:py-3 md:px-6 mt-10'
+              >
+                Log out
+              </button>
+            </div>
+          </PopoverBox>
         )}
       </div>
       <div className='w-full grid grid-cols-12  md:gap-4 lg:gap-12 mt-4 md:mt-10 lg:mt-16'>
@@ -140,32 +172,49 @@ export default function Home({ session }: HomeProps) {
                 <div className='font-bold rounded-full bg-cta text-contrast w-32 h-12 transition animate-pulse' />
               </>
             ) : session ? (
-              <>
-                <div className='flex flex-row items-center gap-2'>
-                  <img
-                    className='w-14 h-14 rounded-full'
-                    src={session?.user?.image as string}
-                  />
-
-                  <div className='flex flex-col gap-1 justify-between'>
-                    <span className='text-gray-300 text-xs'>
-                      Wallet connected
+              minted ? (
+                <div className='flex flex-row w-full items-center gap-2 justify-between'>
+                  <div className='flex flex-col gap-2'>
+                    <span className='text-subtletext font-semibold'>
+                      NFT claimed!
                     </span>
-                    <span>{shorten(me?.wallet?.address as string)}</span>
+                    <Link
+                      href='/collectables'
+                      className='font-semibold text-white underline cursor-pointer'
+                    >
+                      View in you wallet
+                    </Link>
                   </div>
+                  <Icon.Success />
                 </div>
-                {owns ? (
-                  <CheckIcon width={40} />
-                ) : (
-                  <button
-                    className='font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80'
-                    onClick={onMint}
-                    disabled={loading}
-                  >
-                    Claim now
-                  </button>
-                )}
-              </>
+              ) : (
+                <>
+                  <div className='flex flex-row items-center gap-2'>
+                    <img
+                      className='w-14 h-14 rounded-full'
+                      src={session?.user?.image as string}
+                    />
+
+                    <div className='flex flex-col gap-1 justify-between'>
+                      <span className='text-gray-300 text-xs'>
+                        Wallet connected
+                      </span>
+                      <span>{shorten(me?.wallet?.address as string)}</span>
+                    </div>
+                  </div>
+                  {owns ? (
+                    <CheckIcon width={40} />
+                  ) : (
+                    <button
+                      className='font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80'
+                      onClick={onMint}
+                      disabled={loading}
+                    >
+                      Claim now
+                    </button>
+                  )}
+                </>
+              )
             ) : (
               <>
                 <span className='text-xs md:text-base text-gray-300'>

@@ -631,6 +631,9 @@ enum FilterType {
   """Event triggered when a new drop is minted"""
   DROP_MINTED
 
+  """Event triggered when a mint has been successfully transfered"""
+  MINT_TRANSFERED
+
   """Event triggered when a new project is created"""
   PROJECT_CREATED
 
@@ -658,7 +661,7 @@ type Invite {
   """
   The datetime, in UTC, when the invitation to join the organization was created.
   """
-  createdAt: NaiveDateTime!
+  createdAt: DateTime!
 
   """The ID of the user who created the invitation."""
   createdBy: UUID!
@@ -686,7 +689,7 @@ type Invite {
   status: InviteStatus!
 
   """The datetime, in UTC, when the invitation status was updated."""
-  updatedAt: NaiveDateTime
+  updatedAt: DateTime
 }
 
 """Input required for inviting a member to the organization."""
@@ -720,12 +723,12 @@ A member of a Holaplex organization, representing an individual who has been gra
 """
 type Member {
   """The datetime, in UTC, when the member joined the organization."""
-  createdAt: NaiveDateTime!
+  createdAt: DateTime!
 
   """
   The datetime, in UTC, when the member was deactivated from the organization.
   """
-  deactivatedAt: NaiveDateTime
+  deactivatedAt: DateTime
 
   """The unique identifier of the member."""
   id: UUID!
@@ -753,7 +756,7 @@ type Member {
   """
   The datetime, in UTC, when the member was revoked from the organization.
   """
-  revokedAt: NaiveDateTime
+  revokedAt: DateTime
 
   """The user identity who is a member of the organization."""
   user: User
@@ -1053,7 +1056,7 @@ type Organization {
   """
   The datetime, in UTC, when the Holaplex organization was created by its owner.
   """
-  createdAt: NaiveDateTime!
+  createdAt: DateTime!
 
   """
   Get a single API credential by client ID.
@@ -1095,7 +1098,7 @@ type Organization {
   """
   The datetime, in UTC, when the Holaplex organization was deactivated by its owner.
   """
-  deactivatedAt: NaiveDateTime
+  deactivatedAt: DateTime
 
   """
   Define an asynchronous function to load the total credits deducted for each action
@@ -1129,11 +1132,12 @@ type Organization {
   The owner of the Holaplex organization, who has created the organization and has full control over its settings and members.
   """
   owner: Owner
+  profileImageUrl: String
 
   """
   The optional profile image associated with the Holaplex organization, which can be used to visually represent the organization.
   """
-  profileImageUrl: String
+  profileImageUrlOriginal: String
 
   """
   The projects that have been created and are currently associated with the Holaplex organization, which are used to organize NFT campaigns or initiatives within the organization.
@@ -1181,7 +1185,7 @@ The owner of the Holaplex organization, who is the individual that created the o
 """
 type Owner {
   """The datetime, in UTC, when the organization was created."""
-  createdAt: NaiveDateTime!
+  createdAt: DateTime!
 
   """
   The unique identifier assigned to the record of the user who created the Holaplex organization and serves as its owner, which is used to distinguish their record from other records within the Holaplex ecosystem.
@@ -1251,7 +1255,7 @@ A Holaplex project that belongs to an organization. Projects are used to group u
 """
 type Project {
   """The datetime, in UTC, when the project was created."""
-  createdAt: NaiveDateTime!
+  createdAt: DateTime!
 
   """Retrieve a customer record associated with the project, using its ID."""
   customer(id: UUID!): Customer
@@ -1262,7 +1266,7 @@ type Project {
   """
   The date and time in Coordinated Universal Time (UTC) when the Holaplex project was created. Once a project is deactivated, objects that were assigned to the project can no longer be interacted with.
   """
-  deactivatedAt: NaiveDateTime
+  deactivatedAt: DateTime
 
   """Look up a drop associated with the project by its ID."""
   drop(id: UUID!): Drop
@@ -1281,11 +1285,12 @@ type Project {
 
   """The ID of the Holaplex organization to which the project belongs."""
   organizationId: UUID!
+  profileImageUrl: String
 
   """
   The optional profile image associated with the project, which can be used to visually represent the project.
   """
-  profileImageUrl: String
+  profileImageUrlOriginal: String
 
   """
   The treasury assigned to the project, which contains the project's wallets.
@@ -1321,6 +1326,8 @@ type Purchase {
 }
 
 type Query {
+  collections: [CollectionMint]
+
   """
   Returns a list of `ActionCost` which represents the cost of each action on different blockchains.
   
@@ -1416,8 +1423,8 @@ type TransferAssetPayload {
 A collection of wallets assigned to different entities in the Holaplex ecosystem.
 """
 type Treasury {
-  """The creation datetime of the vault."""
-  createdAt: NaiveDateTime!
+  """The creation DateTimeWithTimeZone of the vault."""
+  createdAt: DateTime!
 
   """The unique identifier for the treasury."""
   id: UUID!
@@ -1484,20 +1491,20 @@ A blockchain wallet is a digital wallet that allows users to securely store, man
 """
 type Wallet {
   """The wallet address."""
-  address: String!
+  address: String
 
   """The wallet's associated blockchain."""
   assetId: AssetType!
-  createdAt: NaiveDateTime!
+  createdAt: DateTime!
   createdBy: UUID!
-  legacyAddress: String!
+  deductionId: UUID
+  id: UUID!
 
   """
   The NFTs that were minted from Holaplex and are owned by the wallet's address.
   """
   mints: [CollectionMint!]
-  removedAt: NaiveDateTime
-  tag: String!
+  removedAt: DateTime
   treasuryId: UUID!
 }
 
