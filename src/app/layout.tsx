@@ -1,5 +1,6 @@
+import 'react-toastify/dist/ReactToastify.css';
 import './globals.css';
-import { Inter } from '@next/font/google';
+import { Inter } from 'next/font/google';
 import clsx from 'clsx';
 import App from './App';
 import { getServerSession } from 'next-auth/next';

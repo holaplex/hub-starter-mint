@@ -1,6 +1,6 @@
 # Holaplex Hub Starter
 
-A template repository to help you build NFT based applications using the Holaplex Hub.
+A template repository to help you build NFT based applications using Holaplex Hub.
 
 Includes:
 
@@ -19,12 +19,10 @@ Includes:
 /src
  /app # next js app directory
   /login # social sign up or login
-  page.tsx # mint page
+  page.tsx # home page
  /pages
    /api # next js api routes
     graphql.ts # apps graphql server
-    /webhooks
-      holaplex.ts # incoming webhooks from Holaplex
  /modules # utility clients and functions
    db.ts # prisma db client
    holaplex.ts # configured holaplex client
@@ -45,9 +43,6 @@ npm install
 
 # setup database
 npm run db
-
-# setup prisma client
-npm run generate
 
 # boot up the app
 npm run dev
@@ -73,12 +68,6 @@ POSTGRES_PASSWORD=holaplex
 HOLAPLEX_API_ENDPOINT=https://api.holaplex.com/graphql
 # https://docs.holaplex.dev/api
 HOLAPLEX_AUTH_TOKEN=
-# https://docs.holaplex.dev/hub/For%20Developers/webhooks-overview
-HOLAPLEX_PROJECT_ID=
-# https://docs.holaplex.dev/hub/Guides/creating-drops
-HOLAPLEX_DROP_ID=
-# https://docs.holaplex.dev/hub/Guides/creating-a-customer-wallet
-HOLAPLEX_WALLET_ASSET_TYPE=SOL
 ```
 
 ### Migrations

@@ -14,7 +14,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   /**
-   * Implement the DateTime<Utc> scalar
+   * Implement the DateTime<FixedOffset> scalar
    *
    * The input/output is a string in RFC3339 format.
    */
@@ -66,6 +66,24 @@ export type AccessToken = {
   tokenType: Scalars['String'];
 };
 
+export enum Action {
+  CreateDrop = 'CREATE_DROP',
+  CreateWallet = 'CREATE_WALLET',
+  MintEdition = 'MINT_EDITION',
+  RetryDrop = 'RETRY_DROP',
+  RetryMint = 'RETRY_MINT',
+  TransferAsset = 'TRANSFER_ASSET'
+}
+
+/** Represents the cost of performing a certain action on different blockchains */
+export type ActionCost = {
+  __typename?: 'ActionCost';
+  /** enum that represents the type of action being performed. */
+  action: Action;
+  /** a vector of BlockchainCost structs that represents the cost of performing the action on each blockchain. */
+  blockchains: Array<BlockchainCost>;
+};
+
 /** An enum type named Affiliation that defines a user's association to an organization. The enum is derived using a Union attribute. It has two variants, each containing an associated data type: */
 export type Affiliation = Member | Owner;
 
@@ -97,7 +115,15 @@ export enum Blockchain {
   Solana = 'SOLANA'
 }
 
-/** An NFT collection that has either a fixed supply or unlimited mints. NFT collections are deployed to a desired blockchain. */
+/** Represents the cost of performing an action on a specific blockchain */
+export type BlockchainCost = {
+  __typename?: 'BlockchainCost';
+  /** enum that represents the blockchain on which the action is being performed. */
+  blockchain: Blockchain;
+  /** represents the cost in credits for performing the action on the blockchain. */
+  credits: Scalars['Int'];
+};
+
 export type Collection = {
   __typename?: 'Collection';
   /** The blockchain address of the collection used to view it in blockchain explorers. */
@@ -164,11 +190,15 @@ export type CollectionMint = {
   /** The ID of the collection the NFT was minted from. */
   collectionId: Scalars['UUID'];
   /** The date and time when the NFT was created. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /** The unique ID of the creator of the NFT. */
   createdBy: Scalars['UUID'];
   /** The status of the NFT creation. */
   creationStatus: CreationStatus;
+  /** credits deduction id */
+  creditsDeductionId?: Maybe<Scalars['UUID']>;
+  /** The unique edition number of the NFT. */
+  edition: Scalars['Int'];
   /** The unique ID of the minted NFT. */
   id: Scalars['UUID'];
   /**
@@ -312,6 +342,25 @@ export type Credential = {
   organizationId: Scalars['UUID'];
 };
 
+export type CreditDeposit = {
+  __typename?: 'CreditDeposit';
+  cost: Scalars['Float'];
+  createdAt: Scalars['DateTime'];
+  credits: Scalars['Int'];
+  id: Scalars['UUID'];
+  initiatedBy: Scalars['UUID'];
+  organization: Scalars['UUID'];
+  perCreditCost: Scalars['Float'];
+  reason: DepositReason;
+};
+
+export type Credits = {
+  __typename?: 'Credits';
+  balance: Scalars['Int'];
+  deposits?: Maybe<Array<CreditDeposit>>;
+  id: Scalars['UUID'];
+};
+
 /** A customer record represents a user in your service and is used to group custodial wallets within a specific project. This allows for easy management of wallets and associated assets for a particular customer within your service. */
 export type Customer = {
   __typename?: 'Customer';
@@ -345,6 +394,12 @@ export type DeactivateMemberInput = {
   id: Scalars['UUID'];
 };
 
+export type DeductionTotals = {
+  __typename?: 'DeductionTotals';
+  action: Action;
+  spent: Scalars['Int'];
+};
+
 /** The input for deleting a credential. */
 export type DeleteCredentialInput = {
   /** The unique identifier assigned to the credential to be deleted. */
@@ -367,21 +422,26 @@ export type DeleteWebhookPayload = {
   webhook: Scalars['UUID'];
 };
 
+export enum DepositReason {
+  Gifted = 'GIFTED',
+  Purchased = 'PURCHASED'
+}
+
 export type Drop = {
   __typename?: 'Drop';
   /** The collection for which the drop is managing mints. */
   collection: Collection;
   /** The date and time in UTC when the drop was created. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /** The user id of the person who created the drop. */
   createdById: Scalars['UUID'];
   /** The creation status of the drop. */
   creationStatus: CreationStatus;
   /** The end date and time in UTC for the drop. A value of `null` means the drop does not end until it is fully minted. */
-  endTime?: Maybe<Scalars['NaiveDateTime']>;
+  endTime?: Maybe<Scalars['DateTime']>;
   /** The unique identifier for the drop. */
   id: Scalars['UUID'];
-  pausedAt?: Maybe<Scalars['NaiveDateTime']>;
+  pausedAt?: Maybe<Scalars['DateTime']>;
   /** The cost to mint the drop in US dollars. When purchasing with crypto the user will be charged at the current conversion rate for the blockchain's native coin at the time of minting. */
   price: Scalars['Int'];
   /** The identifier of the project to which the drop is associated. */
@@ -392,9 +452,9 @@ export type Drop = {
    * The shutdown_at field represents the date and time in UTC when the drop was shutdown
    * If it is null, the drop is currently not shutdown
    */
-  shutdownAt?: Maybe<Scalars['NaiveDateTime']>;
+  shutdownAt?: Maybe<Scalars['DateTime']>;
   /** The date and time in UTC when the drop is eligible for minting. A value of `null` means the drop can be minted immediately. */
-  startTime?: Maybe<Scalars['NaiveDateTime']>;
+  startTime?: Maybe<Scalars['DateTime']>;
   /** The current status of the drop. */
   status: DropStatus;
 };
@@ -499,6 +559,8 @@ export enum FilterType {
   DropCreated = 'DROP_CREATED',
   /** Event triggered when a new drop is minted */
   DropMinted = 'DROP_MINTED',
+  /** Event triggered when a mint has been successfully transfered */
+  MintTransfered = 'MINT_TRANSFERED',
   /** Event triggered when a new project is created */
   ProjectCreated = 'PROJECT_CREATED',
   /** Event triggered when a new wallet is created for a project */
@@ -522,7 +584,7 @@ export type Holder = {
 export type Invite = {
   __typename?: 'Invite';
   /** The datetime, in UTC, when the invitation to join the organization was created. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /** The ID of the user who created the invitation. */
   createdBy: Scalars['UUID'];
   /** The email address of the user being invited to become a member of the organization. */
@@ -538,7 +600,7 @@ export type Invite = {
   /** The status of the invitation. */
   status: InviteStatus;
   /** The datetime, in UTC, when the invitation status was updated. */
-  updatedAt?: Maybe<Scalars['NaiveDateTime']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
 };
 
 /** Input required for inviting a member to the organization. */
@@ -563,9 +625,9 @@ export enum InviteStatus {
 export type Member = {
   __typename?: 'Member';
   /** The datetime, in UTC, when the member joined the organization. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /** The datetime, in UTC, when the member was deactivated from the organization. */
-  deactivatedAt?: Maybe<Scalars['NaiveDateTime']>;
+  deactivatedAt?: Maybe<Scalars['DateTime']>;
   /** The unique identifier of the member. */
   id: Scalars['UUID'];
   /** The invitation to join the Holaplex organization that the member accepted in order to gain access to the organization. */
@@ -577,7 +639,7 @@ export type Member = {
   /** The ID of the Holaplex organization to which the user has been granted access. */
   organizationId: Scalars['UUID'];
   /** The datetime, in UTC, when the member was revoked from the organization. */
-  revokedAt?: Maybe<Scalars['NaiveDateTime']>;
+  revokedAt?: Maybe<Scalars['DateTime']>;
   /** The user identity who is a member of the organization. */
   user?: Maybe<User>;
   /** The ID of the user who has been granted access to the Holaplex organization as a member. */
@@ -600,8 +662,9 @@ export type MetadataJson = {
   externalUrl?: Maybe<Scalars['String']>;
   id: Scalars['UUID'];
   identifier: Scalars['String'];
+  image?: Maybe<Scalars['String']>;
   /** The image URI for the NFT. */
-  image: Scalars['String'];
+  imageOriginal: Scalars['String'];
   /** The assigned name of the NFT. */
   name: Scalars['String'];
   /** The symbol of the NFT. */
@@ -653,11 +716,13 @@ export type MetadataJsonPropertyInput = {
   files?: InputMaybe<Array<MetadataJsonFileInput>>;
 };
 
+/** Represents input data for `mint_edition` mutation with a UUID and recipient as fields */
 export type MintDropInput = {
   drop: Scalars['UUID'];
   recipient: Scalars['String'];
 };
 
+/** Represents payload data for the `mint_edition` mutation */
 export type MintEditionPayload = {
   __typename?: 'MintEditionPayload';
   collectionMint: CollectionMint;
@@ -768,6 +833,22 @@ export type Mutation = {
   /** This mutation resumes a paused drop, allowing minting of editions to be restored */
   resumeDrop: ResumeDropPayload;
   /**
+   * This mutation retries an existing drop.
+   * The drop returns immediately with a creation status of CREATING.
+   * You can [set up a webhook](https://docs.holaplex.dev/hub/For%20Developers/webhooks-overview) to receive a notification when the drop is ready to be minted.
+   * Errors
+   * The mutation will fail if the drop and its related collection cannot be located,
+   * if the transaction response cannot be built,
+   * or if the transaction event cannot be emitted.
+   */
+  retryDrop: CreateDropPayload;
+  /**
+   * This mutation retries a mint which failed or is in pending state. The mint returns immediately with a creation status of CREATING. You can [set up a webhook](https://docs.holaplex.dev/hub/For%20Developers/webhooks-overview) to receive a notification when the mint is accepted by the blockchain.
+   * # Errors
+   * If the mint cannot be saved to the database or fails to be emitted for submission to the desired blockchain, the mutation will result in an error.
+   */
+  retryMint: RetryMintPayload;
+  /**
    * Shuts down a drop by writing the current UTC timestamp to the shutdown_at field of drop record.
    * Returns the `Drop` object on success.
    *
@@ -775,6 +856,27 @@ export type Mutation = {
    * Fails if the drop or collection is not found, or if updating the drop record fails.
    */
   shutdownDrop: ShutdownDropPayload;
+  /**
+   * Transfers an asset from one user to another on a supported blockchain network.
+   *
+   * # Arguments
+   *
+   * * `self` - A reference to the current instance of the struct.
+   * * `ctx` - A context object containing application context data.
+   * * `input` - A TransferAssetInput struct containing the input data for the asset transfer.
+   *
+   * # Returns
+   *
+   * Returns a Result containing a TransferAssetPayload struct with the updated mint information upon success.
+   *
+   * # Errors
+   * This function returns an error :
+   * If the specified blockchain is not currently supported.
+   * If the specified mint does not exist.
+   * If there is an error while making a transfer request to the Solana blockchain.
+   * If there is an error while sending the TransferAsset event to the event producer.
+   */
+  transferAsset: TransferAssetPayload;
 };
 
 
@@ -883,15 +985,30 @@ export type MutationResumeDropArgs = {
 };
 
 
+export type MutationRetryDropArgs = {
+  input: RetryDropInput;
+};
+
+
+export type MutationRetryMintArgs = {
+  input: RetryMintInput;
+};
+
+
 export type MutationShutdownDropArgs = {
   input: ShutdownDropInput;
+};
+
+
+export type MutationTransferAssetArgs = {
+  input: TransferAssetInput;
 };
 
 /** A Holaplex organization is the top-level account within the Holaplex ecosystem. Each organization has a single owner who can invite members to join. Organizations use projects to organize NFT campaigns or initiatives. */
 export type Organization = {
   __typename?: 'Organization';
   /** The datetime, in UTC, when the Holaplex organization was created by its owner. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /**
    * Get a single API credential by client ID.
    *
@@ -919,8 +1036,22 @@ export type Organization = {
    * A list of API credentials associated with this organization.
    */
   credentials: Array<Credential>;
+  /**
+   * Define an asynchronous function to load the credits for the organization
+   * Returns `Credits` object
+   * #Errors
+   * returns error if credits_loader is not found in the context or if the loader fails to load the credits
+   */
+  credits?: Maybe<Credits>;
   /** The datetime, in UTC, when the Holaplex organization was deactivated by its owner. */
-  deactivatedAt?: Maybe<Scalars['NaiveDateTime']>;
+  deactivatedAt?: Maybe<Scalars['DateTime']>;
+  /**
+   * Define an asynchronous function to load the total credits deducted for each action
+   * Returns `DeductionTotals` object
+   * #Errors
+   * returns error if total_deductions_loader is not found in the context or if the loader fails to load the total deductions
+   */
+  deductionTotals?: Maybe<Array<DeductionTotals>>;
   /** The unique identifier assigned to the Holaplex organization, which is used to distinguish it from other organizations within the Holaplex ecosystem. */
   id: Scalars['UUID'];
   /** The invitations to join the Holaplex organization that have been sent to email addresses and are either awaiting or have been accepted by the recipients. */
@@ -931,8 +1062,9 @@ export type Organization = {
   name: Scalars['String'];
   /** The owner of the Holaplex organization, who has created the organization and has full control over its settings and members. */
   owner?: Maybe<Owner>;
-  /** The optional profile image associated with the Holaplex organization, which can be used to visually represent the organization. */
   profileImageUrl?: Maybe<Scalars['String']>;
+  /** The optional profile image associated with the Holaplex organization, which can be used to visually represent the organization. */
+  profileImageUrlOriginal?: Maybe<Scalars['String']>;
   /** The projects that have been created and are currently associated with the Holaplex organization, which are used to organize NFT campaigns or initiatives within the organization. */
   projects: Array<Project>;
   /**
@@ -999,7 +1131,7 @@ export type OrganizationWebhookArgs = {
 export type Owner = {
   __typename?: 'Owner';
   /** The datetime, in UTC, when the organization was created. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /** The unique identifier assigned to the record of the user who created the Holaplex organization and serves as its owner, which is used to distinguish their record from other records within the Holaplex ecosystem. */
   id: Scalars['UUID'];
   /** The Holaplex organization owned by the user. */
@@ -1053,13 +1185,13 @@ export type PauseDropPayload = {
 export type Project = {
   __typename?: 'Project';
   /** The datetime, in UTC, when the project was created. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /** Retrieve a customer record associated with the project, using its ID. */
   customer?: Maybe<Customer>;
   /** Retrieve all customer records associated with a given project. */
   customers?: Maybe<Array<Customer>>;
   /** The date and time in Coordinated Universal Time (UTC) when the Holaplex project was created. Once a project is deactivated, objects that were assigned to the project can no longer be interacted with. */
-  deactivatedAt?: Maybe<Scalars['NaiveDateTime']>;
+  deactivatedAt?: Maybe<Scalars['DateTime']>;
   /** Look up a drop associated with the project by its ID. */
   drop?: Maybe<Drop>;
   /** The drops associated with the project. */
@@ -1071,8 +1203,9 @@ export type Project = {
   organization?: Maybe<Organization>;
   /** The ID of the Holaplex organization to which the project belongs. */
   organizationId: Scalars['UUID'];
-  /** The optional profile image associated with the project, which can be used to visually represent the project. */
   profileImageUrl?: Maybe<Scalars['String']>;
+  /** The optional profile image associated with the project, which can be used to visually represent the project. */
+  profileImageUrlOriginal?: Maybe<Scalars['String']>;
   /** The treasury assigned to the project, which contains the project's wallets. */
   treasury?: Maybe<Treasury>;
 };
@@ -1093,7 +1226,7 @@ export type ProjectDropArgs = {
 export type Purchase = {
   __typename?: 'Purchase';
   /** The date and time when the purchase was created. */
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   /** The ID of the drop that facilitated the purchase, if any. */
   dropId?: Maybe<Scalars['UUID']>;
   /** The ID of the purchase. */
@@ -1112,6 +1245,14 @@ export type Purchase = {
 
 export type Query = {
   __typename?: 'Query';
+  collections?: Maybe<Array<Maybe<CollectionMint>>>;
+  /**
+   * Returns a list of `ActionCost` which represents the cost of each action on different blockchains.
+   *
+   * # Errors
+   * This function fails if it fails to get `CreditsClient` or if blockchain enum conversion fails.
+   */
+  creditSheet: Array<ActionCost>;
   drop?: Maybe<Drop>;
   /**
    * Returns a list of event types that an external service can subscribe to.
@@ -1172,6 +1313,21 @@ export type ResumeDropPayload = {
   drop: Drop;
 };
 
+export type RetryDropInput = {
+  drop: Scalars['UUID'];
+};
+
+/** Represents input data for `retry_mint` mutation with an ID as a field of type UUID */
+export type RetryMintInput = {
+  id: Scalars['UUID'];
+};
+
+/** Represents payload data for `retry_mint` mutation */
+export type RetryMintPayload = {
+  __typename?: 'RetryMintPayload';
+  collectionMint: CollectionMint;
+};
+
 /** Represents the input fields for shutting down a drop */
 export type ShutdownDropInput = {
   drop: Scalars['UUID'];
@@ -1184,11 +1340,21 @@ export type ShutdownDropPayload = {
   drop: Drop;
 };
 
+export type TransferAssetInput = {
+  id: Scalars['UUID'];
+  recipient: Scalars['String'];
+};
+
+export type TransferAssetPayload = {
+  __typename?: 'TransferAssetPayload';
+  mint: CollectionMint;
+};
+
 /** A collection of wallets assigned to different entities in the Holaplex ecosystem. */
 export type Treasury = {
   __typename?: 'Treasury';
-  /** The creation datetime of the vault. */
-  createdAt: Scalars['NaiveDateTime'];
+  /** The creation DateTimeWithTimeZone of the vault. */
+  createdAt: Scalars['DateTime'];
   /** The unique identifier for the treasury. */
   id: Scalars['UUID'];
   /**
@@ -1225,6 +1391,8 @@ export type User = {
   /** The last name of the user identity. */
   lastName: Scalars['String'];
   name?: Maybe<Scalars['String']>;
+  /** The profile image associated with the user identity. */
+  profileImage?: Maybe<Scalars['String']>;
   /** The timestamp in UTC when the user identity was last updated. */
   updatedAt: Scalars['String'];
   wallet?: Maybe<Wallet>;
@@ -1234,16 +1402,16 @@ export type User = {
 export type Wallet = {
   __typename?: 'Wallet';
   /** The wallet address. */
-  address: Scalars['String'];
+  address?: Maybe<Scalars['String']>;
   /** The wallet's associated blockchain. */
   assetId: AssetType;
-  createdAt: Scalars['NaiveDateTime'];
+  createdAt: Scalars['DateTime'];
   createdBy: Scalars['UUID'];
-  legacyAddress: Scalars['String'];
+  deductionId?: Maybe<Scalars['UUID']>;
+  id: Scalars['UUID'];
   /** The NFTs that were minted from Holaplex and are owned by the wallet's address. */
   mints?: Maybe<Array<CollectionMint>>;
-  removedAt?: Maybe<Scalars['NaiveDateTime']>;
-  tag: Scalars['String'];
+  removedAt?: Maybe<Scalars['DateTime']>;
   treasuryId: Scalars['UUID'];
 };
 
@@ -1353,9 +1521,12 @@ export type ResolversTypes = {
   AcceptInviteInput: AcceptInviteInput;
   AcceptInvitePayload: ResolverTypeWrapper<AcceptInvitePayload>;
   AccessToken: ResolverTypeWrapper<AccessToken>;
+  Action: Action;
+  ActionCost: ResolverTypeWrapper<ActionCost>;
   Affiliation: ResolverTypeWrapper<ResolversUnionTypes['Affiliation']>;
   AssetType: AssetType;
   Blockchain: Blockchain;
+  BlockchainCost: ResolverTypeWrapper<BlockchainCost>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Collection: ResolverTypeWrapper<Collection>;
   CollectionCreator: ResolverTypeWrapper<CollectionCreator>;
@@ -1377,13 +1548,17 @@ export type ResolversTypes = {
   CreateWebhookPayload: ResolverTypeWrapper<CreateWebhookPayload>;
   CreationStatus: CreationStatus;
   Credential: ResolverTypeWrapper<Credential>;
+  CreditDeposit: ResolverTypeWrapper<CreditDeposit>;
+  Credits: ResolverTypeWrapper<Credits>;
   Customer: ResolverTypeWrapper<Customer>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   DeactivateMemberInput: DeactivateMemberInput;
+  DeductionTotals: ResolverTypeWrapper<DeductionTotals>;
   DeleteCredentialInput: DeleteCredentialInput;
   DeleteCredentialPayload: ResolverTypeWrapper<DeleteCredentialPayload>;
   DeleteWebhookInput: DeleteWebhookInput;
   DeleteWebhookPayload: ResolverTypeWrapper<DeleteWebhookPayload>;
+  DepositReason: DepositReason;
   Drop: ResolverTypeWrapper<Drop>;
   DropStatus: DropStatus;
   EditCredentialInput: EditCredentialInput;
@@ -1396,6 +1571,7 @@ export type ResolversTypes = {
   EditWebhookPayload: ResolverTypeWrapper<EditWebhookPayload>;
   EventType: ResolverTypeWrapper<EventType>;
   FilterType: FilterType;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Holder: ResolverTypeWrapper<Holder>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Invite: ResolverTypeWrapper<Invite>;
@@ -1426,9 +1602,14 @@ export type ResolversTypes = {
   ReactivateMemberInput: ReactivateMemberInput;
   ResumeDropInput: ResumeDropInput;
   ResumeDropPayload: ResolverTypeWrapper<ResumeDropPayload>;
+  RetryDropInput: RetryDropInput;
+  RetryMintInput: RetryMintInput;
+  RetryMintPayload: ResolverTypeWrapper<RetryMintPayload>;
   ShutdownDropInput: ShutdownDropInput;
   ShutdownDropPayload: ResolverTypeWrapper<ShutdownDropPayload>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  TransferAssetInput: TransferAssetInput;
+  TransferAssetPayload: ResolverTypeWrapper<TransferAssetPayload>;
   Treasury: ResolverTypeWrapper<Treasury>;
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
   User: ResolverTypeWrapper<Omit<User, 'affiliations'> & { affiliations: Array<ResolversTypes['Affiliation']> }>;
@@ -1441,7 +1622,9 @@ export type ResolversParentTypes = {
   AcceptInviteInput: AcceptInviteInput;
   AcceptInvitePayload: AcceptInvitePayload;
   AccessToken: AccessToken;
+  ActionCost: ActionCost;
   Affiliation: ResolversUnionTypes['Affiliation'];
+  BlockchainCost: BlockchainCost;
   Boolean: Scalars['Boolean'];
   Collection: Collection;
   CollectionCreator: CollectionCreator;
@@ -1462,9 +1645,12 @@ export type ResolversParentTypes = {
   CreateWebhookInput: CreateWebhookInput;
   CreateWebhookPayload: CreateWebhookPayload;
   Credential: Credential;
+  CreditDeposit: CreditDeposit;
+  Credits: Credits;
   Customer: Customer;
   DateTime: Scalars['DateTime'];
   DeactivateMemberInput: DeactivateMemberInput;
+  DeductionTotals: DeductionTotals;
   DeleteCredentialInput: DeleteCredentialInput;
   DeleteCredentialPayload: DeleteCredentialPayload;
   DeleteWebhookInput: DeleteWebhookInput;
@@ -1479,6 +1665,7 @@ export type ResolversParentTypes = {
   EditWebhookInput: EditWebhookInput;
   EditWebhookPayload: EditWebhookPayload;
   EventType: EventType;
+  Float: Scalars['Float'];
   Holder: Holder;
   Int: Scalars['Int'];
   Invite: Invite;
@@ -1508,9 +1695,14 @@ export type ResolversParentTypes = {
   ReactivateMemberInput: ReactivateMemberInput;
   ResumeDropInput: ResumeDropInput;
   ResumeDropPayload: ResumeDropPayload;
+  RetryDropInput: RetryDropInput;
+  RetryMintInput: RetryMintInput;
+  RetryMintPayload: RetryMintPayload;
   ShutdownDropInput: ShutdownDropInput;
   ShutdownDropPayload: ShutdownDropPayload;
   String: Scalars['String'];
+  TransferAssetInput: TransferAssetInput;
+  TransferAssetPayload: TransferAssetPayload;
   Treasury: Treasury;
   UUID: Scalars['UUID'];
   User: Omit<User, 'affiliations'> & { affiliations: Array<ResolversParentTypes['Affiliation']> };
@@ -1537,8 +1729,20 @@ export type AccessTokenResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ActionCostResolvers<ContextType = any, ParentType extends ResolversParentTypes['ActionCost'] = ResolversParentTypes['ActionCost']> = {
+  action?: Resolver<ResolversTypes['Action'], ParentType, ContextType>;
+  blockchains?: Resolver<Array<ResolversTypes['BlockchainCost']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type AffiliationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Affiliation'] = ResolversParentTypes['Affiliation']> = {
   __resolveType: TypeResolveFn<'Member' | 'Owner', ParentType, ContextType>;
+};
+
+export type BlockchainCostResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlockchainCost'] = ResolversParentTypes['BlockchainCost']> = {
+  blockchain?: Resolver<ResolversTypes['Blockchain'], ParentType, ContextType>;
+  credits?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CollectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Collection'] = ResolversParentTypes['Collection']> = {
@@ -1570,9 +1774,11 @@ export type CollectionMintResolvers<ContextType = any, ParentType extends Resolv
   address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   collection?: Resolver<Maybe<ResolversTypes['Collection']>, ParentType, ContextType>;
   collectionId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdBy?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   creationStatus?: Resolver<ResolversTypes['CreationStatus'], ParentType, ContextType>;
+  creditsDeductionId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  edition?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   metadataJson?: Resolver<Maybe<ResolversTypes['MetadataJson']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1628,6 +1834,25 @@ export type CredentialResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CreditDepositResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreditDeposit'] = ResolversParentTypes['CreditDeposit']> = {
+  cost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credits?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  initiatedBy?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  organization?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  perCreditCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  reason?: Resolver<ResolversTypes['DepositReason'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreditsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Credits'] = ResolversParentTypes['Credits']> = {
+  balance?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  deposits?: Resolver<Maybe<Array<ResolversTypes['CreditDeposit']>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CustomerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Customer'] = ResolversParentTypes['Customer']> = {
   addresses?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
@@ -1644,6 +1869,12 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type DeductionTotalsResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeductionTotals'] = ResolversParentTypes['DeductionTotals']> = {
+  action?: Resolver<ResolversTypes['Action'], ParentType, ContextType>;
+  spent?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type DeleteCredentialPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteCredentialPayload'] = ResolversParentTypes['DeleteCredentialPayload']> = {
   credential?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1656,17 +1887,17 @@ export type DeleteWebhookPayloadResolvers<ContextType = any, ParentType extends 
 
 export type DropResolvers<ContextType = any, ParentType extends ResolversParentTypes['Drop'] = ResolversParentTypes['Drop']> = {
   collection?: Resolver<ResolversTypes['Collection'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdById?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   creationStatus?: Resolver<ResolversTypes['CreationStatus'], ParentType, ContextType>;
-  endTime?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  endTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  pausedAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  pausedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   projectId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
-  shutdownAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
-  startTime?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  shutdownAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  startTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DropStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1710,7 +1941,7 @@ export type HolderResolvers<ContextType = any, ParentType extends ResolversParen
 };
 
 export type InviteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Invite'] = ResolversParentTypes['Invite']> = {
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdBy?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -1718,7 +1949,7 @@ export type InviteResolvers<ContextType = any, ParentType extends ResolversParen
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   organizationId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['InviteStatus'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1727,14 +1958,14 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type MemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['Member'] = ResolversParentTypes['Member']> = {
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
-  deactivatedAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  deactivatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   invite?: Resolver<Maybe<ResolversTypes['Invite']>, ParentType, ContextType>;
   inviteId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   organizationId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  revokedAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  revokedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1747,7 +1978,8 @@ export type MetadataJsonResolvers<ContextType = any, ParentType extends Resolver
   externalUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   identifier?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  image?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageOriginal?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   uri?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1790,7 +2022,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   pauseDrop?: Resolver<ResolversTypes['PauseDropPayload'], ParentType, ContextType, RequireFields<MutationPauseDropArgs, 'input'>>;
   reactivateMember?: Resolver<ResolversTypes['Member'], ParentType, ContextType, RequireFields<MutationReactivateMemberArgs, 'input'>>;
   resumeDrop?: Resolver<ResolversTypes['ResumeDropPayload'], ParentType, ContextType, RequireFields<MutationResumeDropArgs, 'input'>>;
+  retryDrop?: Resolver<ResolversTypes['CreateDropPayload'], ParentType, ContextType, RequireFields<MutationRetryDropArgs, 'input'>>;
+  retryMint?: Resolver<ResolversTypes['RetryMintPayload'], ParentType, ContextType, RequireFields<MutationRetryMintArgs, 'input'>>;
   shutdownDrop?: Resolver<ResolversTypes['ShutdownDropPayload'], ParentType, ContextType, RequireFields<MutationShutdownDropArgs, 'input'>>;
+  transferAsset?: Resolver<ResolversTypes['TransferAssetPayload'], ParentType, ContextType, RequireFields<MutationTransferAssetArgs, 'input'>>;
 };
 
 export interface NaiveDateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NaiveDateTime'], any> {
@@ -1798,16 +2033,19 @@ export interface NaiveDateTimeScalarConfig extends GraphQLScalarTypeConfig<Resol
 }
 
 export type OrganizationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   credential?: Resolver<ResolversTypes['Credential'], ParentType, ContextType, RequireFields<OrganizationCredentialArgs, 'clientId'>>;
   credentials?: Resolver<Array<ResolversTypes['Credential']>, ParentType, ContextType, Partial<OrganizationCredentialsArgs>>;
-  deactivatedAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  credits?: Resolver<Maybe<ResolversTypes['Credits']>, ParentType, ContextType>;
+  deactivatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  deductionTotals?: Resolver<Maybe<Array<ResolversTypes['DeductionTotals']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   invites?: Resolver<Array<ResolversTypes['Invite']>, ParentType, ContextType, Partial<OrganizationInvitesArgs>>;
   members?: Resolver<Maybe<Array<ResolversTypes['Member']>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Owner']>, ParentType, ContextType>;
   profileImageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileImageUrlOriginal?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   projects?: Resolver<Array<ResolversTypes['Project']>, ParentType, ContextType>;
   webhook?: Resolver<Maybe<ResolversTypes['Webhook']>, ParentType, ContextType, RequireFields<OrganizationWebhookArgs, 'id'>>;
   webhooks?: Resolver<Maybe<Array<ResolversTypes['Webhook']>>, ParentType, ContextType>;
@@ -1815,7 +2053,7 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type OwnerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Owner'] = ResolversParentTypes['Owner']> = {
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   organizationId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -1835,10 +2073,10 @@ export type PauseDropPayloadResolvers<ContextType = any, ParentType extends Reso
 };
 
 export type ProjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['Project'] = ResolversParentTypes['Project']> = {
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   customer?: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<ProjectCustomerArgs, 'id'>>;
   customers?: Resolver<Maybe<Array<ResolversTypes['Customer']>>, ParentType, ContextType>;
-  deactivatedAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
+  deactivatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   drop?: Resolver<Maybe<ResolversTypes['Drop']>, ParentType, ContextType, RequireFields<ProjectDropArgs, 'id'>>;
   drops?: Resolver<Maybe<Array<ResolversTypes['Drop']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -1846,12 +2084,13 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   organizationId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   profileImageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileImageUrlOriginal?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   treasury?: Resolver<Maybe<ResolversTypes['Treasury']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PurchaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Purchase'] = ResolversParentTypes['Purchase']> = {
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   dropId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   mintId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -1863,6 +2102,8 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  collections?: Resolver<Maybe<Array<Maybe<ResolversTypes['CollectionMint']>>>, ParentType, ContextType>;
+  creditSheet?: Resolver<Array<ResolversTypes['ActionCost']>, ParentType, ContextType>;
   drop?: Resolver<Maybe<ResolversTypes['Drop']>, ParentType, ContextType>;
   eventTypes?: Resolver<Array<ResolversTypes['EventType']>, ParentType, ContextType>;
   invite?: Resolver<Maybe<ResolversTypes['Invite']>, ParentType, ContextType, RequireFields<QueryInviteArgs, 'id'>>;
@@ -1877,13 +2118,23 @@ export type ResumeDropPayloadResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type RetryMintPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['RetryMintPayload'] = ResolversParentTypes['RetryMintPayload']> = {
+  collectionMint?: Resolver<ResolversTypes['CollectionMint'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ShutdownDropPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShutdownDropPayload'] = ResolversParentTypes['ShutdownDropPayload']> = {
   drop?: Resolver<ResolversTypes['Drop'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TransferAssetPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransferAssetPayload'] = ResolversParentTypes['TransferAssetPayload']> = {
+  mint?: Resolver<ResolversTypes['CollectionMint'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type TreasuryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Treasury'] = ResolversParentTypes['Treasury']> = {
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   vaultId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   wallet?: Resolver<Maybe<ResolversTypes['Wallet']>, ParentType, ContextType, RequireFields<TreasuryWalletArgs, 'assetType'>>;
@@ -1904,20 +2155,21 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileImage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   wallet?: Resolver<Maybe<ResolversTypes['Wallet']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type WalletResolvers<ContextType = any, ParentType extends ResolversParentTypes['Wallet'] = ResolversParentTypes['Wallet']> = {
-  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   assetId?: Resolver<ResolversTypes['AssetType'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['NaiveDateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdBy?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  legacyAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  deductionId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   mints?: Resolver<Maybe<Array<ResolversTypes['CollectionMint']>>, ParentType, ContextType>;
-  removedAt?: Resolver<Maybe<ResolversTypes['NaiveDateTime']>, ParentType, ContextType>;
-  tag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  removedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   treasuryId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1941,7 +2193,9 @@ export type WebhookResolvers<ContextType = any, ParentType extends ResolversPare
 export type Resolvers<ContextType = any> = {
   AcceptInvitePayload?: AcceptInvitePayloadResolvers<ContextType>;
   AccessToken?: AccessTokenResolvers<ContextType>;
+  ActionCost?: ActionCostResolvers<ContextType>;
   Affiliation?: AffiliationResolvers<ContextType>;
+  BlockchainCost?: BlockchainCostResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
   CollectionCreator?: CollectionCreatorResolvers<ContextType>;
   CollectionMint?: CollectionMintResolvers<ContextType>;
@@ -1953,8 +2207,11 @@ export type Resolvers<ContextType = any> = {
   CreateProjectPayload?: CreateProjectPayloadResolvers<ContextType>;
   CreateWebhookPayload?: CreateWebhookPayloadResolvers<ContextType>;
   Credential?: CredentialResolvers<ContextType>;
+  CreditDeposit?: CreditDepositResolvers<ContextType>;
+  Credits?: CreditsResolvers<ContextType>;
   Customer?: CustomerResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  DeductionTotals?: DeductionTotalsResolvers<ContextType>;
   DeleteCredentialPayload?: DeleteCredentialPayloadResolvers<ContextType>;
   DeleteWebhookPayload?: DeleteWebhookPayloadResolvers<ContextType>;
   Drop?: DropResolvers<ContextType>;
@@ -1980,7 +2237,9 @@ export type Resolvers<ContextType = any> = {
   Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ResumeDropPayload?: ResumeDropPayloadResolvers<ContextType>;
+  RetryMintPayload?: RetryMintPayloadResolvers<ContextType>;
   ShutdownDropPayload?: ShutdownDropPayloadResolvers<ContextType>;
+  TransferAssetPayload?: TransferAssetPayloadResolvers<ContextType>;
   Treasury?: TreasuryResolvers<ContextType>;
   UUID?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
