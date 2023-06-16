@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: hub-starter-template
+    name: mint-page
     env: node
     numInstances: 1
     buildCommand: npm install; npm run build
