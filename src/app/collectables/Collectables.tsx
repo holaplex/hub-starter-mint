@@ -60,7 +60,7 @@ export default function Collectables() {
                   (mint: CollectionMint) => (
                     <div
                       key={mint.id}
-                      className='flex flex-col bg-gray-100 rounded-lg p-4'
+                      className='flex flex-col bg-contrast rounded-lg p-4'
                     >
                       <img
                         className='w-40 h-40 rounded-lg object-contain'

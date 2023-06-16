@@ -1,17 +1,15 @@
 'use client';
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
-import { Holder } from '@/graphql.types';
+import { useMemo } from 'react';
+import { CollectionMint, Holder } from '@/graphql.types';
 import { shorten } from '../modules/wallet';
 import { MintDrop } from '@/mutations/mint.graphql';
-import { useMutation, useQuery } from '@apollo/client';
+import { ApolloError, useMutation, useQuery } from '@apollo/client';
 import { GetDrop } from '@/queries/drop.graphql';
 import Link from 'next/link';
-import clsx from 'clsx';
 import { isNil, not, pipe } from 'ramda';
 import useMe from '@/hooks/useMe';
 import { Session } from 'next-auth';
-import { CheckIcon } from '@heroicons/react/24/solid';
 import { toast } from 'react-toastify';
 import { PopoverBox } from '../components/Popover';
 import { Icon } from '../components/Icon';
@@ -19,7 +17,7 @@ import { signOut } from 'next-auth/react';
 import Copy from '../components/Copy';
 
 interface MintData {
-  mint: string;
+  mint: CollectionMint;
 }
 
 interface HomeProps {
@@ -28,7 +26,6 @@ interface HomeProps {
 
 export default function Home({ session }: HomeProps) {
   const me = useMe();
-  const [minted, setMinted] = useState<boolean>(false);
   const dropQuery = useQuery(GetDrop);
   const collection = dropQuery.data?.drop.collection;
   const metadataJson = collection?.metadataJson;
@@ -48,16 +45,16 @@ export default function Home({ session }: HomeProps) {
   });
 
   const onMint = () => {
-    mint()
-      .then((data: any) => {
+    mint({
+      onCompleted: (data: MintData) => {
         toast.success('Mint successful');
-        setMinted(true);
-      })
-      .catch((e: any) => {
+      },
+      onError: (error: ApolloError) => {
         toast.error(
           'Unable to mint. Please try again or reach out to support.'
         );
-      });
+      }
+    });
   };
 
   return (
@@ -181,10 +178,10 @@ export default function Home({ session }: HomeProps) {
                     <div className='h-6 w-16 rounded-full bg-backdrop animate-pulse' />
                   </div>
                 </div>
-                <div className='font-bold rounded-full bg-cta text-contrast w-32 h-12 transition animate-pulse' />
+                <div className='font-bold rounded-full bg-backdrop w-32 h-12 transition animate-pulse' />
               </>
             ) : session ? (
-              minted ? (
+              owns ? (
                 <div className='flex flex-row w-full items-center gap-2 justify-between'>
                   <div className='flex flex-col gap-2'>
                     <span className='text-subtletext font-semibold'>
@@ -214,17 +211,14 @@ export default function Home({ session }: HomeProps) {
                       <span>{shorten(me?.wallet?.address as string)}</span>
                     </div>
                   </div>
-                  {owns ? (
-                    <CheckIcon width={40} />
-                  ) : (
-                    <button
-                      className='font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80'
-                      onClick={onMint}
-                      disabled={loading}
-                    >
-                      Claim now
-                    </button>
-                  )}
+
+                  <button
+                    className='font-bold rounded-full bg-cta text-contrast py-3 px-6 transition hover:opacity-80'
+                    onClick={onMint}
+                    disabled={loading}
+                  >
+                    Claim now
+                  </button>
                 </>
               )
             ) : (

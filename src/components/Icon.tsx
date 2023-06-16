@@ -18,9 +18,9 @@ function Success({ className }: IconProps) {
       <path
         d='M26.6667 8L12 22.6667L5.33337 16'
         stroke='#66A784'
-        stroke-width='4.5'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+        strokeWidth='4.5'
+        strokeLinecap='round'
+        strokeLinejoin='round'
       />
     </svg>
   );
