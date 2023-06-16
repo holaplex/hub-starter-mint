@@ -29,7 +29,7 @@ export default function Collectables() {
           Log out
         </button>
       </div>
-      <div className='flex flex-col md:flex-row mt-10 md:mt-28 gap-28 w-full items-center md:justify-start'>
+      <div className='flex flex-col md:flex-row mt-10 md:mt-28 gap-7 md:gap-28  w-full items-center md:justify-start md:items-start'>
         <div className='flex flex-col gap-1 items-center'>
           <img className='w-20 h-20 rounded-full' src={me?.image as string} />
           <div className='mt-6'>
@@ -43,12 +43,12 @@ export default function Collectables() {
           </div>
         </div>
 
-        <div className='flex flex-col gap-10'>
+        <div className='flex flex-col gap-10 items-center md:items-start'>
           <span className='text-2xl font-semibold'>Your collectables</span>
           <div className='flex flex-wrap gap-6 justify-start mt-4 mb-10'>
             {collectionsQuery.loading ? (
               <>
-                {Array.from(Array(8)).map((_, index) => (
+                {Array.from(Array(6)).map((_, index) => (
                   <div key={index}>
                     <div className='w-52 h-52 rounded-lg bg-gray-600 animate-pulse' />
                   </div>

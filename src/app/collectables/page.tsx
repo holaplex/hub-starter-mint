@@ -1,14 +1,13 @@
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/pages/api/auth/[...nextauth]';
+'use client';
 import { redirect } from 'next/navigation';
 import Collectables from './Collectables';
+import useMe from '../../hooks/useMe';
 
 export default async function CollectablesPage() {
-  //const session = await getServerSession(authOptions);
-
-  // if (session) {
-  //   redirect('/');
-  // }
+  const me = useMe();
+  if (!me) {
+    redirect('/');
+  }
 
   return <Collectables />;
 }
