@@ -14,9 +14,19 @@ const config: CodegenConfig = {
         },
       },
     },
-    "./schema.graphql"
+    "./schema.graphql",
   ],
   generates: {
+    "./holaplex.graphql": {
+      schema: {
+        [process.env.HOLAPLEX_API_ENDPOINT as string]: {
+          headers: {
+            Authorization: process.env.HOLAPLEX_AUTH_TOKEN as string,
+          },
+        },
+      },
+      plugins: ["schema-ast"],
+    },
     "./@types/graphql.d.ts": {
       plugins: ["typescript-graphql-files-modules"],
     },

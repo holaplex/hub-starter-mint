@@ -1,0 +1,13 @@
+query GetCollections {
+  collections {
+    id
+    collectionId
+    createdAt
+    metadataJson {
+      id
+      image
+      name
+      description
+    }
+  }
+}
