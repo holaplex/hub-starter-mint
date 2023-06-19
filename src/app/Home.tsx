@@ -191,7 +191,7 @@ export default function Home({ session }: HomeProps) {
                       href='/collectables'
                       className='font-semibold text-white underline cursor-pointer'
                     >
-                      View in you wallet
+                      View in your wallet
                     </Link>
                   </div>
                   <Icon.Success />
