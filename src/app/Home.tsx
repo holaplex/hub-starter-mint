@@ -188,7 +188,7 @@ export default function Home({ session }: HomeProps) {
                       NFT claimed!
                     </span>
                     <Link
-                      href='/collectables'
+                      href='/collectibles'
                       className='font-semibold text-white underline cursor-pointer'
                     >
                       View in your wallet

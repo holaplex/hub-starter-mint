@@ -13,7 +13,7 @@ interface GetCollectionsData {
   collections: [CollectionMint];
 }
 
-export default function Collectables() {
+export default function Collectibles() {
   const me = useMe();
   const collectionsQuery = useQuery<GetCollectionsData>(GetCollections);
   return (
@@ -44,7 +44,7 @@ export default function Collectables() {
         </div>
 
         <div className='flex flex-col gap-10 items-center md:items-start'>
-          <span className='text-2xl font-semibold'>Your collectables</span>
+          <span className='text-2xl font-semibold'>Your collectibles</span>
           <div className='flex flex-wrap gap-6 justify-start mt-4 mb-10'>
             {collectionsQuery.loading ? (
               <>
