@@ -1,13 +1,13 @@
 'use client';
 import { redirect } from 'next/navigation';
-import Collectables from './Collectables';
+import Collectibles from './Collectibles';
 import useMe from '../../hooks/useMe';
 
-export default async function CollectablesPage() {
+export default async function CollectiblesPage() {
   const me = useMe();
   if (!me) {
     redirect('/');
   }
 
-  return <Collectables />;
+  return <Collectibles />;
 }
