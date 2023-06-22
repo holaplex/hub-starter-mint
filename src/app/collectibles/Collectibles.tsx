@@ -69,6 +69,12 @@ export default function Collectibles() {
                       <span className='font-bold mt-2'>
                         {mint.metadataJson?.name}
                       </span>
+                      <Link
+                        href={`/collectibles/${mint.id}/transfer`}
+                        className='w-full font-medium border-2 rounded-full border-cta py-2 px-6 text-cta mt-2 text-center'
+                      >
+                        Transfer
+                      </Link>
                     </div>
                   )
                 )}

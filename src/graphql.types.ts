@@ -126,7 +126,11 @@ export type BlockchainCost = {
 
 export type Collection = {
   __typename?: 'Collection';
-  /** The blockchain address of the collection used to view it in blockchain explorers. */
+  /**
+   * The blockchain address of the collection used to view it in blockchain explorers.
+   * On Solana this is the mint address.
+   * On EVM chains it is the concatenation of the contract address and the token id `{contractAddress}:{tokenId}`.
+   */
   address?: Maybe<Scalars['String']>;
   /** The blockchain of the collection. */
   blockchain: Blockchain;
@@ -183,8 +187,12 @@ export type CollectionCreatorInput = {
 /** Represents a single NFT minted from a collection. */
 export type CollectionMint = {
   __typename?: 'CollectionMint';
-  /** The wallet address of the NFT. */
-  address: Scalars['String'];
+  /**
+   * The address of the NFT
+   * On Solana this is the mint address.
+   * On EVM chains it is the concatenation of the contract address and the token id `{contractAddress}:{tokenId}`.
+   */
+  address?: Maybe<Scalars['String']>;
   /** The collection the NFT was minted from. */
   collection?: Maybe<Collection>;
   /** The ID of the collection the NFT was minted from. */
@@ -575,7 +583,7 @@ export type Holder = {
   /** The collection ID that the holder owns. */
   collectionId: Scalars['UUID'];
   /** The specific mints from the collection that the holder owns. */
-  mints: Array<Scalars['String']>;
+  mints: Array<Scalars['UUID']>;
   /** The number of NFTs that the holder owns in the collection. */
   owns: Scalars['Int'];
 };
@@ -1771,7 +1779,7 @@ export type CollectionCreatorResolvers<ContextType = any, ParentType extends Res
 };
 
 export type CollectionMintResolvers<ContextType = any, ParentType extends ResolversParentTypes['CollectionMint'] = ResolversParentTypes['CollectionMint']> = {
-  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   collection?: Resolver<Maybe<ResolversTypes['Collection']>, ParentType, ContextType>;
   collectionId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -1935,7 +1943,7 @@ export type EventTypeResolvers<ContextType = any, ParentType extends ResolversPa
 export type HolderResolvers<ContextType = any, ParentType extends ResolversParentTypes['Holder'] = ResolversParentTypes['Holder']> = {
   address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   collectionId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  mints?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  mints?: Resolver<Array<ResolversTypes['UUID']>, ParentType, ContextType>;
   owns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
