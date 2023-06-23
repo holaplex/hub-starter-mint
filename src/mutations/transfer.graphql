@@ -1,0 +1,8 @@
+mutation TransferAsset($input: TransferAssetInput!) {
+  transferAsset(input: $input) {
+    mint {
+      address
+      owner
+    }
+  }
+}
