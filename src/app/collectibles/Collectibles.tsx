@@ -33,7 +33,7 @@ export default function Collectibles() {
         <div className='flex flex-col gap-1 items-center'>
           <img className='w-20 h-20 rounded-full' src={me?.image as string} />
           <div className='mt-6'>
-            <span className='text-xs text-subtletext'>Wallet address</span>
+            <span className='text-xs text-neautraltext'>Wallet address</span>
             <div className='flex gap-2 mt-1'>
               <span className='text-xs font-medium'>
                 {shorten(me?.wallet?.address as string)}

@@ -184,7 +184,7 @@ export default function Home({ session }: HomeProps) {
               owns ? (
                 <div className='flex flex-row w-full items-center gap-2 justify-between'>
                   <div className='flex flex-col gap-2'>
-                    <span className='text-subtletext font-semibold'>
+                    <span className='text-neautraltext font-semibold'>
                       NFT claimed!
                     </span>
                     <Link
