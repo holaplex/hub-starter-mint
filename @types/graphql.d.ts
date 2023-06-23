@@ -31,6 +31,15 @@ declare module '*/mint.graphql' {
 }
     
 
+declare module '*/transfer.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const TransferAsset: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/collections.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;

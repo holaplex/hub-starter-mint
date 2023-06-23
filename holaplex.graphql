@@ -106,6 +106,8 @@ type BlockchainCost {
 type Collection {
   """
   The blockchain address of the collection used to view it in blockchain explorers.
+  On Solana this is the mint address.
+  On EVM chains it is the concatenation of the contract address and the token id `{contractAddress}:{tokenId}`.
   """
   address: String
 
@@ -185,8 +187,12 @@ input CollectionCreatorInput {
 
 """Represents a single NFT minted from a collection."""
 type CollectionMint {
-  """The wallet address of the NFT."""
-  address: String!
+  """
+  The address of the NFT
+  On Solana this is the mint address.
+  On EVM chains it is the concatenation of the contract address and the token id `{contractAddress}:{tokenId}`.
+  """
+  address: String
 
   """The collection the NFT was minted from."""
   collection: Collection
@@ -650,7 +656,7 @@ type Holder {
   collectionId: UUID!
 
   """The specific mints from the collection that the holder owns."""
-  mints: [String!]!
+  mints: [UUID!]!
 
   """The number of NFTs that the holder owns in the collection."""
   owns: Int!

@@ -6,6 +6,76 @@ export function Icon() {
   return <div></div>;
 }
 
+function Loading({ className }: IconProps) {
+  return (
+    <svg
+      width='21'
+      height='20'
+      viewBox='0 0 21 20'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path
+        d='M10.5 1.66666V4.99999'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M10.5 15V18.3333'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M4.6084 4.10834L6.96673 6.46667'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M14.0332 13.5333L16.3915 15.8917'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M2.1665 10H5.49984'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M15.5 10H18.8333'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M4.6084 15.8917L6.96673 13.5333'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M14.0332 6.46667L16.3915 4.10834'
+        stroke='#1A1A1D'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+    </svg>
+  );
+}
+Icon.Loading = Loading;
+
 function Success({ className }: IconProps) {
   return (
     <svg
