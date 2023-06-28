@@ -60,8 +60,8 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
 # setup SSO with Twitter
-TWITTER_CLIENT_ID=
-TWITTER_CLIENT_SECRET=
+TWITTER_API_KEY=
+TWITTER_API_KEY_SECRET=
 
 # database
 DATABASE_URL=postgres://postgres:holaplex@localhost:5432/hub-starter
