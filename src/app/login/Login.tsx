@@ -14,7 +14,13 @@ export default function Login() {
         className='rounded-lg px-20 py-3 bg-cta text-black hover:opacity-80 transition'
         onClick={() => signIn('google')}
       >
-        Continue with Google
+        Sign in with Google
+      </button>
+      <button
+        className='rounded-lg px-20 py-3 bg-cta text-black hover:opacity-80 transition'
+        onClick={() => signIn('twitter')}
+      >
+        Sign in with Twitter
       </button>
     </div>
   );
