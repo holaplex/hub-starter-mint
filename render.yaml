@@ -28,6 +28,10 @@ services:
         fromDatabase:
           name: mint
           property: connectionString
+       - key: TWITTER_ID
+         sync: false
+       - key: TWITTER_SECRET
+         sync: false
 
     autoDeploy: true
 
