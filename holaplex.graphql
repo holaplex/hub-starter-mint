@@ -1027,6 +1027,7 @@ type Mutation {
   If there is an error while sending the TransferAsset event to the event producer.
   """
   transferAsset(input: TransferAssetInput!): TransferAssetPayload!
+  transferMint(id: String!, wallet: String!): CollectionMint
 }
 
 """

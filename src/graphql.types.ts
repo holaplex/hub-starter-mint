@@ -873,6 +873,7 @@ export type Mutation = {
    * If there is an error while sending the TransferAsset event to the event producer.
    */
   transferAsset: TransferAssetPayload;
+  transferMint?: Maybe<CollectionMint>;
 };
 
 
@@ -998,6 +999,12 @@ export type MutationShutdownDropArgs = {
 
 export type MutationTransferAssetArgs = {
   input: TransferAssetInput;
+};
+
+
+export type MutationTransferMintArgs = {
+  id: Scalars['String'];
+  wallet: Scalars['String'];
 };
 
 /** A Holaplex organization is the top-level account within the Holaplex ecosystem. Each organization has a single owner who can invite members to join. Organizations use projects to organize NFT campaigns or initiatives. */
@@ -2022,6 +2029,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   retryMint?: Resolver<ResolversTypes['RetryMintPayload'], ParentType, ContextType, RequireFields<MutationRetryMintArgs, 'input'>>;
   shutdownDrop?: Resolver<ResolversTypes['ShutdownDropPayload'], ParentType, ContextType, RequireFields<MutationShutdownDropArgs, 'input'>>;
   transferAsset?: Resolver<ResolversTypes['TransferAssetPayload'], ParentType, ContextType, RequireFields<MutationTransferAssetArgs, 'input'>>;
+  transferMint?: Resolver<Maybe<ResolversTypes['CollectionMint']>, ParentType, ContextType, RequireFields<MutationTransferMintArgs, 'id' | 'wallet'>>;
 };
 
 export interface NaiveDateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NaiveDateTime'], any> {

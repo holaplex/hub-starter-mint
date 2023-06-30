@@ -22,4 +22,5 @@ type Query {
 
 type Mutation {
   mint: CollectionMint
+  transferMint(id: String!, wallet: String!): CollectionMint
 }

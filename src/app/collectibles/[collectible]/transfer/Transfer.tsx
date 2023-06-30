@@ -1,21 +1,20 @@
 'use client';
-import {
-  TransferAssetInput,
-  TransferAssetPayload
-} from '../../../../graphql.types';
-import { TransferAsset } from '../../../../mutations/transfer.graphql';
+
+import { ApolloError, useMutation } from '@apollo/client';
+import { TransferAssetPayload } from '../../../../graphql.types';
+import { TransferMint } from '../../../../mutations/mint.graphql';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Icon } from '../../../../components/Icon';
-import holaplex from '../../../../modules/holaplex';
 
-interface TransferAssetData {
+interface TransferMintData {
   transferAsset: TransferAssetPayload;
 }
 
-interface TransferAssetVars {
-  input: TransferAssetInput;
+interface TransferMintVars {
+  id: String;
+  wallet: String;
 }
 
 interface TransferForm {
@@ -29,27 +28,26 @@ export default function Transfer({ collectible }: { collectible: string }) {
   const { register, handleSubmit, formState, setError } =
     useForm<TransferForm>();
 
+  const [transferMint, transferMintResult] = useMutation<
+    TransferMintData,
+    TransferMintVars
+  >(TransferMint);
+
   const submit = async ({ wallet }: TransferForm) => {
     if (!wallet) return;
-
-    const { data, errors } = await holaplex.mutate<
-      TransferAssetData,
-      TransferAssetVars
-    >({
-      mutation: TransferAsset,
+    transferMint({
       variables: {
-        input: {
-          id: collectible,
-          recipient: wallet
-        }
+        id: collectible,
+        wallet: wallet
+      },
+      onError: (error: ApolloError) => {
+        console.log('Error', error);
+        setError('root', { message: error.message });
+      },
+      onCompleted: () => {
+        setNftSent(true);
       }
     });
-
-    if (!errors) {
-      setNftSent(true);
-    } else {
-      setError('root', { message: errors[0].message });
-    }
   };
 
   const close = () => {
