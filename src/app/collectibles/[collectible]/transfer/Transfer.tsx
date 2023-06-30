@@ -1,22 +1,19 @@
 'use client';
-
 import { ApolloError, useMutation } from '@apollo/client';
-import {
-  TransferAssetInput,
-  TransferAssetPayload
-} from '../../../../graphql.types';
-import { TransferAsset } from '../../../../mutations/transfer.graphql';
+import { TransferAssetPayload } from '../../../../graphql.types';
+import { TransferMint } from '../../../../mutations/mint.graphql';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Icon } from '../../../../components/Icon';
 
-interface TransferAssetData {
+interface TransferMintData {
   transferAsset: TransferAssetPayload;
 }
 
-interface TransferAssetVars {
-  input: TransferAssetInput;
+interface TransferMintVars {
+  id: String;
+  wallet: String;
 }
 
 interface TransferForm {
@@ -30,19 +27,17 @@ export default function Transfer({ collectible }: { collectible: string }) {
   const { register, handleSubmit, formState, setError } =
     useForm<TransferForm>();
 
-  const [transferAsset, transferAssetResult] = useMutation<
-    TransferAssetData,
-    TransferAssetVars
-  >(TransferAsset);
+  const [transferMint, transferMintResult] = useMutation<
+    TransferMintData,
+    TransferMintVars
+  >(TransferMint);
 
   const submit = async ({ wallet }: TransferForm) => {
     if (!wallet) return;
-    transferAsset({
+    transferMint({
       variables: {
-        input: {
-          id: collectible,
-          recipient: wallet
-        }
+        id: collectible,
+        wallet: wallet
       },
       onError: (error: ApolloError) => {
         console.log('Error', error);

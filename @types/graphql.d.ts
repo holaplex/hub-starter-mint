@@ -26,6 +26,7 @@ declare module '*/mint.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const MintDrop: DocumentNode;
+export const TransferMint: DocumentNode;
 
   export default defaultDocument;
 }

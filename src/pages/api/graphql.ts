@@ -1,7 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
-import { join } from 'node:path';
 import db from '@/modules/db';
 import {
   MintDropInput,
@@ -10,10 +9,14 @@ import {
   QueryResolvers,
   Project,
   CollectionMint,
-  Drop
+  Drop,
+  TransferAssetPayload,
+  TransferAssetInput
 } from '@/graphql.types';
 import { Session } from 'next-auth';
 import { MintNft } from '@/mutations/drop.graphql';
+import { TransferAsset } from '@/mutations/transfer.graphql';
+
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { GetProjectDrop } from '@/queries/project.graphql';
@@ -118,6 +121,14 @@ interface MintNftVars {
   input: MintDropInput;
 }
 
+interface TransferAssetData {
+  transferAsset: TransferAssetPayload;
+}
+
+interface TransferAssetVars {
+  input: TransferAssetInput;
+}
+
 const mutationResolvers: MutationResolvers<AppContext> = {
   async mint(_a, _b, { session, dataSources: { db, holaplex } }) {
     if (!session) {
@@ -143,6 +154,27 @@ const mutationResolvers: MutationResolvers<AppContext> = {
     });
 
     return data?.mintEdition.collectionMint as CollectionMint;
+  },
+
+  async transferMint(_a, b, { session, dataSources: { db, holaplex } }) {
+    if (!session) {
+      return null;
+    }
+
+    const { data } = await holaplex.mutate<
+      TransferAssetData,
+      TransferAssetVars
+    >({
+      mutation: TransferAsset,
+      variables: {
+        input: {
+          id: b.id,
+          recipient: b.wallet
+        }
+      }
+    });
+
+    return data?.transferAsset.mint as CollectionMint;
   }
 };
 
