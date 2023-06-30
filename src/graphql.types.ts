@@ -91,22 +91,10 @@ export type Affiliation = Member | Owner;
 export enum AssetType {
   /** Ethereum Mainnet */
   Eth = 'ETH',
-  /** Note: Holaplex uses `ETH_TEST` for provisioning wallets on its staging environment but still submits transactions to mainnet. */
-  EthTest = 'ETH_TEST',
   /** Mainnet Polygon */
   Matic = 'MATIC',
-  /**
-   * Ploygon Mumbai Testnet
-   * Note: Holaplex uses `MATIC_TEST` for provisioning wallets on its staging environment but still submits transactions to mainnet.
-   */
-  MaticTest = 'MATIC_TEST',
   /** Mainnet Solana */
-  Sol = 'SOL',
-  /**
-   * Devnet Solana
-   * Note: Holaplex uses `SOL_TEST` for provisioning wallets on its staging environment but still submits transactions to mainnet.
-   */
-  SolTest = 'SOL_TEST'
+  Sol = 'SOL'
 }
 
 export enum Blockchain {

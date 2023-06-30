@@ -1,7 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
-import { join } from 'node:path';
 import db from '@/modules/db';
 import {
   MintDropInput,
@@ -10,7 +9,9 @@ import {
   QueryResolvers,
   Project,
   CollectionMint,
-  Drop
+  Drop,
+  TransferAssetPayload,
+  TransferAssetInput
 } from '@/graphql.types';
 import { Session } from 'next-auth';
 import { MintNft } from '@/mutations/drop.graphql';
@@ -116,6 +117,14 @@ interface MintNftData {
 
 interface MintNftVars {
   input: MintDropInput;
+}
+
+interface TransferAssetData {
+  transferAsset: TransferAssetPayload;
+}
+
+interface TransferAssetVars {
+  input: TransferAssetInput;
 }
 
 const mutationResolvers: MutationResolvers<AppContext> = {

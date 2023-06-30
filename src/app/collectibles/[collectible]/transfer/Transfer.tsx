@@ -1,6 +1,4 @@
 'use client';
-
-import { ApolloError, useMutation } from '@apollo/client';
 import {
   TransferAssetInput,
   TransferAssetPayload
@@ -10,6 +8,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Icon } from '../../../../components/Icon';
+import holaplex from '../../../../modules/holaplex';
 
 interface TransferAssetData {
   transferAsset: TransferAssetPayload;
@@ -30,28 +29,27 @@ export default function Transfer({ collectible }: { collectible: string }) {
   const { register, handleSubmit, formState, setError } =
     useForm<TransferForm>();
 
-  const [transferAsset, transferAssetResult] = useMutation<
-    TransferAssetData,
-    TransferAssetVars
-  >(TransferAsset);
-
   const submit = async ({ wallet }: TransferForm) => {
     if (!wallet) return;
-    transferAsset({
+
+    const { data, errors } = await holaplex.mutate<
+      TransferAssetData,
+      TransferAssetVars
+    >({
+      mutation: TransferAsset,
       variables: {
         input: {
           id: collectible,
           recipient: wallet
         }
-      },
-      onError: (error: ApolloError) => {
-        console.log('Error', error);
-        setError('root', { message: error.message });
-      },
-      onCompleted: () => {
-        setNftSent(true);
       }
     });
+
+    if (!errors) {
+      setNftSent(true);
+    } else {
+      setError('root', { message: errors[0].message });
+    }
   };
 
   const close = () => {
