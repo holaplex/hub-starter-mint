@@ -1,5 +1,4 @@
 'use client';
-
 import { ApolloError, useMutation } from '@apollo/client';
 import { TransferAssetPayload } from '../../../../graphql.types';
 import { TransferMint } from '../../../../mutations/mint.graphql';
