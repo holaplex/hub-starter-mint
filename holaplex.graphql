@@ -60,28 +60,11 @@ enum AssetType {
   """Ethereum Mainnet"""
   ETH
 
-  """
-  Note: Holaplex uses `ETH_TEST` for provisioning wallets on its staging environment but still submits transactions to mainnet.
-  """
-  ETH_TEST
-
   """Mainnet Polygon"""
   MATIC
 
-  """
-  Ploygon Mumbai Testnet
-  Note: Holaplex uses `MATIC_TEST` for provisioning wallets on its staging environment but still submits transactions to mainnet.
-  """
-  MATIC_TEST
-
   """Mainnet Solana"""
   SOL
-
-  """
-  Devnet Solana
-  Note: Holaplex uses `SOL_TEST` for provisioning wallets on its staging environment but still submits transactions to mainnet.
-  """
-  SOL_TEST
 }
 
 enum Blockchain {
@@ -1044,6 +1027,7 @@ type Mutation {
   If there is an error while sending the TransferAsset event to the event producer.
   """
   transferAsset(input: TransferAssetInput!): TransferAssetPayload!
+  transferMint(id: String!, wallet: String!): CollectionMint
 }
 
 """
