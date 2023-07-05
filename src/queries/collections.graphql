@@ -3,6 +3,7 @@ query GetCollections {
     id
     collectionId
     createdAt
+    creationStatus
     metadataJson {
       id
       image
