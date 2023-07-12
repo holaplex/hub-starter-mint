@@ -22,6 +22,8 @@ services:
         generateValue: true
       - key: HOLAPLEX_WALLET_ASSET_TYPE
         value: SOL
+      - key: NEXT_PUBLIC_CHAIN_NAME
+        value: "Solana"
       - key: HOLAPLEX_API_ENDPOINT
         value: https://api.holaplex.com/graphql
       - key: DATABASE_URL
