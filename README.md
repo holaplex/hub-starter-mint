@@ -66,9 +66,15 @@ POSTGRES_PASSWORD=holaplex
 
 # holaplex
 HOLAPLEX_API_ENDPOINT=https://api.holaplex.com/graphql
-# https://docs.holaplex.dev/api
 HOLAPLEX_AUTH_TOKEN=
+HOLAPLEX_PROJECT_ID=
+HOLAPLEX_DROP_ID=
+HOLAPLEX_WALLET_ASSET_TYPE=
+NEXT_PUBLIC_CHAIN_NAME=
+NEXTAUTH_URL=
 ```
+
+We currently support `HOLAPLEX_WALLET_ASSET_TYPE` in `[SOL, MATIC]`.
 
 ### Migrations
 
