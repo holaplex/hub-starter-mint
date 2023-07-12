@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Icon } from '../../../../components/Icon';
+import useMe from '@/hooks/useMe';
 
 interface TransferMintData {
   transferAsset: TransferAssetPayload;
@@ -23,6 +24,8 @@ interface TransferForm {
 export default function Transfer({ collectible }: { collectible: string }) {
   const router = useRouter();
   const [nftSent, setNftSent] = useState<boolean>(false);
+
+  const me = useMe();
 
   const { register, handleSubmit, formState, setError } =
     useForm<TransferForm>();
@@ -56,7 +59,7 @@ export default function Transfer({ collectible }: { collectible: string }) {
   return (
     <div className='flex flex-col justify-center items-center min-h-screen w-[366px]'>
       <h1 className='text-3xl font-bold text-center'>
-        Send this NFT to a Solana wallet
+        Send this NFT to a {me?.assetType == "SOL"? "Solana": me?.assetType == "MATIC"? "Polygon": ""} wallet
       </h1>
       {!nftSent ? (
         <form
@@ -64,7 +67,7 @@ export default function Transfer({ collectible }: { collectible: string }) {
           onSubmit={handleSubmit(submit)}
         >
           <label className='text-sm text-subtletext' htmlFor='wallet'>
-            Solana wallet address
+          {me?.assetType == "SOL"? "Solana": me?.assetType == "MATIC"? "Polygon": ""} wallet address
           </label>
           <input
             id='wallet'
