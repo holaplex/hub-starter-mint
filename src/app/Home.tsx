@@ -25,6 +25,7 @@ interface HomeProps {
 }
 
 export default function Home({ session }: HomeProps) {
+  const chainName = (process.env.NEXT_PUBLIC_CHAIN_NAME === undefined) ? "Solana": process.env.NEXT_PUBLIC_CHAIN_NAME;
   const me = useMe();
   const dropQuery = useQuery(GetDrop);
   const collection = dropQuery.data?.drop.collection;
@@ -94,7 +95,7 @@ export default function Home({ session }: HomeProps) {
           >
             <div className='rounded-lg bg-contrast p-6 flex flex-col items-center mt-4'>
               <span className='text-xs text-gray-300'>
-                Solana wallet address
+                {chainName} wallet address
               </span>
               <div className='flex gap-2 mt-1'>
                 <span className='text-xs'>
