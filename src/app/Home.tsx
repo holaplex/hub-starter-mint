@@ -94,7 +94,7 @@ export default function Home({ session }: HomeProps) {
           >
             <div className='rounded-lg bg-contrast p-6 flex flex-col items-center mt-4'>
               <span className='text-xs text-gray-300'>
-                Solana wallet address
+                {me?.assetType == "SOL"? "Solana": me?.assetType == "MATIC"? "Polygon": ""} wallet address
               </span>
               <div className='flex gap-2 mt-1'>
                 <span className='text-xs'>
