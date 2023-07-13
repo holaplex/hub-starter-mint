@@ -14,6 +14,5 @@ interface GetDropData {
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
-  console.log('session', session);
   return <Home session={session} />;
 }

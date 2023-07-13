@@ -49,7 +49,7 @@ interface CreateCustomerWalletVars {
 
 function customerTreasuryReady(customer: string) {
   return async function checkCustomerTreasuryReady() {
-    console.log('waiting for treasurty to be ready', customer);
+    console.log('waiting for treasury to be ready', customer);
     const { data } = await holaplex.query<
       GetCustomerTreasuryData,
       GetCustomerTreasuryVars
@@ -61,8 +61,6 @@ function customerTreasuryReady(customer: string) {
         customer
       }
     });
-
-    console.log(customer, data);
 
     return data.project.customer?.treasury?.id;
   };
@@ -95,7 +93,6 @@ export const authOptions: NextAuthOptions = {
         }
       });
 
-      console.log('customer data', createCustomerResponse.data);
       const customer = createCustomerResponse.data?.createCustomer.customer;
 
       const me = await db.user.update({
@@ -106,8 +103,6 @@ export const authOptions: NextAuthOptions = {
           holaplexCustomerId: customer?.id
         }
       });
-
-      console.log('me', me);
 
       await waitUntil(customerTreasuryReady(customer?.id as string), {
         intervalBetweenAttempts: 100
@@ -126,19 +121,15 @@ export const authOptions: NextAuthOptions = {
         }
       });
 
-      console.log('customer wallet', createCustomerWalletResponse);
-
       const wallet =
         createCustomerWalletResponse.data?.createCustomerWallet.wallet;
 
-      const savedWallet = await db.wallet.create({
+      await db.wallet.create({
         data: {
           holaplexCustomerId: me.holaplexCustomerId as string,
           address: wallet?.address as string
         }
       });
-
-      console.log('saved wallet', savedWallet);
     }
   }
 };
