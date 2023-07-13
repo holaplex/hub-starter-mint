@@ -78,6 +78,7 @@ export const authOptions: NextAuthOptions = {
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID as string,
       clientSecret: process.env.TWITTER_CLIENT_SECRET as string
+      //version: '2.0' // opt-in to Twitter OAuth 2.0
     })
   ],
   events: {
@@ -94,6 +95,7 @@ export const authOptions: NextAuthOptions = {
         }
       });
 
+      console.log('customer data', createCustomerResponse.data);
       const customer = createCustomerResponse.data?.createCustomer.customer;
 
       const me = await db.user.update({
@@ -104,6 +106,8 @@ export const authOptions: NextAuthOptions = {
           holaplexCustomerId: customer?.id
         }
       });
+
+      console.log('me', me);
 
       await waitUntil(customerTreasuryReady(customer?.id as string), {
         intervalBetweenAttempts: 100
@@ -122,15 +126,19 @@ export const authOptions: NextAuthOptions = {
         }
       });
 
+      console.log('customer wallet', createCustomerWalletResponse);
+
       const wallet =
         createCustomerWalletResponse.data?.createCustomerWallet.wallet;
 
-      await db.wallet.create({
+      const savedWallet = await db.wallet.create({
         data: {
           holaplexCustomerId: me.holaplexCustomerId as string,
           address: wallet?.address as string
         }
       });
+
+      console.log('saved wallet', savedWallet);
     }
   }
 };

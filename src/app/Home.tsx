@@ -26,6 +26,7 @@ interface HomeProps {
 
 export default function Home({ session }: HomeProps) {
   const me = useMe();
+  console.log('me in home', me);
   const dropQuery = useQuery(GetDrop);
   const collection = dropQuery.data?.drop.collection;
   const metadataJson = collection?.metadataJson;
