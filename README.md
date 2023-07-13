@@ -59,6 +59,10 @@ Create a `.env` file at the root of the project. Add the following environment v
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
+# setup SSO with Twitter
+TWITTER_API_KEY=
+TWITTER_API_KEY_SECRET=
+
 # database
 DATABASE_URL=postgres://postgres:holaplex@localhost:5432/hub-starter
 POSTGRES_DB=hub-starter
