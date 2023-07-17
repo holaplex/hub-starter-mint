@@ -25,10 +25,8 @@ services:
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: HOLAPLEX_WALLET_ASSET_TYPE
-        value: SOL
         sync: false
       - key: NEXT_PUBLIC_CHAIN_NAME
-        value: "Solana"
         sync: false
       - key: HOLAPLEX_API_ENDPOINT
         value: https://api.holaplex.com/graphql
