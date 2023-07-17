@@ -9,12 +9,18 @@ export default function Login() {
       <Link href='/' className='fixed top-8 right-8'>
         <XMarkIcon className='w-8 h-8 cursor-pointe hover:opacity-80' />
       </Link>
-      <h1 className='text-2xl bold mb-8'>Sign in to create your free wallet</h1>
+      <h1 className='text-2xl bold'>Sign in to create your free wallet</h1>
       <button
-        className='rounded-lg px-20 py-3 bg-cta text-black hover:opacity-80 transition'
+        className='rounded-lg px-20 py-3 bg-cta text-black hover:opacity-80 transition mt-8'
         onClick={() => signIn('google')}
       >
         Continue with Google
+      </button>
+      <button
+        className='rounded-lg px-20 py-3 bg-cta text-black hover:opacity-80 transition mt-4'
+        onClick={() => signIn('twitter')}
+      >
+        Continue with Twitter
       </button>
     </div>
   );

@@ -38,6 +38,7 @@ query GetCustomerCollections($project: UUID!, $customer: UUID!) {
         id
         collectionId
         createdAt
+        creationStatus
         metadataJson {
           id
           image
