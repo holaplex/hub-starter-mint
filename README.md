@@ -30,6 +30,7 @@ Includes:
  /mutations # holaplex and app api mutations
  tailwind.config.js # color theme
 ```
+
 ## Getting Started
 
 Ensure you have nodejs and docker installed on your workstation.
@@ -59,6 +60,10 @@ Create a `.env` file at the root of the project. Add the following environment v
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
+# setup SSO with Twitter
+TWITTER_CLIENT_ID=
+TWITTER_CLIENT_SECRET=
+
 # database
 DATABASE_URL=postgres://postgres:holaplex@localhost:5432/hub-starter
 POSTGRES_DB=hub-starter
@@ -75,9 +80,11 @@ HOLAPLEX_AUTH_TOKEN=
 Follow the [Prisma guide](https://www.prisma.io/docs/guides/database/developing-with-prisma-migrate) on adjusting the database through migrations. Once the Prisma schema has been adjusted run `npm run migrate`.
 
 ## Release
+
 The starter is designed to be deployed to [render](https://render.com) using their Infrastructure as Code (IaC) configuration file [render.yaml](/render.yaml). The IaC manifest will set up a web server for the mint page and a database for storing users, sessions, and wallets.
 
 ### Database
+
 After deploying the environment, access the shell of the web server and run the following command to create and set up the database schema:
 
 ```
@@ -85,5 +92,5 @@ npm run db
 ```
 
 ### Environment Variables
-Although the IaC will create placeholder environment variables for the web service, you will need to update them to match your Holaplex account.
 
+Although the IaC will create placeholder environment variables for the web service, you will need to update them to match your Holaplex account.
