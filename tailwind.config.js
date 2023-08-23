@@ -8,7 +8,7 @@ module.exports = {
         cta: '#7814ff',
         // background
         backdrop: '#fff',
-        // 
+        // button background
         contrast: ' #000',
       }
     }
