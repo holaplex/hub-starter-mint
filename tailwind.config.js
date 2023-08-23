@@ -4,9 +4,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // buttons
         cta: '#7814ff',
-        backdrop: '#ffffff',
-        contrast: ' #494E64',
+        // background
+        backdrop: '#fff',
+        // 
+        contrast: ' #000',
       }
     }
   },
