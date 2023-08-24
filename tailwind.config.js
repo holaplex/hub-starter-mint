@@ -4,12 +4,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // buttons
         cta: '#7814ff',
-        // background
         backdrop: '#fff',
-        // button background
         contrast: ' #000',
+        neautraltext: '#BDBDBD',
+        subtletext: '#AAAAAA',
+        cellsubtle: '#2B2B2B',
+        success: '#628E36',
+        failure: '#E4584F'
       }
     }
   },

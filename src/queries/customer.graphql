@@ -28,3 +28,24 @@ query GetCustomerTreasury($project: UUID!, $customer: UUID!) {
     }
   }
 }
+
+query GetCustomerCollections($project: UUID!, $customer: UUID!) {
+  project(id: $project) {
+    id
+    customer(id: $customer) {
+      id
+      mints {
+        id
+        collectionId
+        createdAt
+        creationStatus
+        metadataJson {
+          id
+          image
+          name
+          description
+        }
+      }
+    }
+  }
+}

@@ -10,6 +10,10 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: TWITTER_CLIENT_ID
+        sync: false
+      - key: TWITTER_CLIENT_SECRET
+        sync: false
       - key: HOLAPLEX_AUTH_TOKEN
         sync: false
       - key: HOLAPLEX_PROJECT_ID
@@ -21,7 +25,9 @@ services:
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: HOLAPLEX_WALLET_ASSET_TYPE
-        value: SOL
+        sync: false
+      - key: NEXT_PUBLIC_CHAIN_NAME
+        sync: false
       - key: HOLAPLEX_API_ENDPOINT
         value: https://api.holaplex.com/graphql
       - key: DATABASE_URL

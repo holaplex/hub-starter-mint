@@ -1,10 +1,10 @@
-import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
-import { PrismaClient } from "@prisma/client";
-import { Project, AssetType, User } from "@/graphql.types";
-import { GetCustomerWallet } from "@/queries/customer.graphql";
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { PrismaClient } from '@prisma/client';
+import { Project, AssetType, User } from '@/graphql.types';
+import { GetCustomerWallet } from '@/queries/customer.graphql';
 
 interface GetCustomerWalletData {
-  project: Pick<Project, "customer">;
+  project: Pick<Project, 'customer'>;
 }
 
 interface GetCustomerWalletVars {
@@ -28,27 +28,27 @@ export default class UserSource {
     }
 
     const user = await this.db.user.findFirst({
-      where: { email },
+      where: { email }
     });
 
     const { data } = await this.holaplex.query<
       GetCustomerWalletData,
       GetCustomerWalletVars
     >({
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
       query: GetCustomerWallet,
       variables: {
         project: process.env.HOLAPLEX_PROJECT_ID as string,
         customer: user?.holaplexCustomerId as string,
-        assetType: process.env.HOLAPLEX_WALLET_ASSET_TYPE as AssetType,
-      },
+        assetType: process.env.HOLAPLEX_WALLET_ASSET_TYPE as AssetType
+      }
     });
 
     return {
       name: user?.name,
       email: user?.email,
       image: user?.image,
-      wallet: data.project.customer?.treasury?.wallet,
+      wallet: data.project.customer?.treasury?.wallet
     } as User;
   }
 }
