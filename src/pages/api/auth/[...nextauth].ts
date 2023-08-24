@@ -1,10 +1,10 @@
-import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import TwitterProvider from "next-auth/providers/twitter"
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import type { NextAuthOptions } from "next-auth";
-import prisma from "@/modules/db";
-import { waitUntil } from "async-wait-until";
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import TwitterProvider from 'next-auth/providers/twitter';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import type { NextAuthOptions } from 'next-auth';
+import prisma from '@/modules/db';
+import { waitUntil } from 'async-wait-until';
 
 import {
   CreateCustomer,
