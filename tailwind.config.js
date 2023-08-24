@@ -4,9 +4,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        cta: '#F6D357',
-        backdrop: '#1A1A1D',
-        contrast: ' #212122',
+        cta: '#7814ff',
+        backdrop: '#fff',
+        contrast: ' #000',
         neautraltext: '#BDBDBD',
         subtletext: '#AAAAAA',
         cellsubtle: '#2B2B2B',
